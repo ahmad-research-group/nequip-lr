@@ -92,6 +92,7 @@ class AtomwiseReduce(GraphModuleMixin, torch.nn.Module):
         )
         if self.constant != 1.0:
             data[self.out_field] = data[self.out_field] * self.constant
+        print("Total Energy ",data['total_energy'])
         return data
 
 

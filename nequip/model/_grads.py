@@ -15,6 +15,7 @@ def ForceOutput(model: GraphModuleMixin) -> GradientOutput:
     """
     if AtomicDataDict.FORCE_KEY in model.irreps_out:
         raise ValueError("This model already has force outputs.")
+    print("I am in ForceOutput")
     return GradientOutput(
         func=model,
         of=AtomicDataDict.TOTAL_ENERGY_KEY,
@@ -45,7 +46,7 @@ def StressForceOutput(model: GraphModuleMixin) -> GradientOutput:
     r"""Add forces and stresses to a model that predicts energy.
 
     Args:
-        model: the model to wrap. Must have ``AtomicDataDict.TOTAL_ENERGY_KEY`` as an output.
+        model: the model to wrap. Must have ``AtomicDataDict._KEY`` as an output.
 
     Returns:
         A ``StressOutput`` wrapping ``model``.

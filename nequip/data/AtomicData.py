@@ -25,6 +25,7 @@ from nequip.utils.torch_geometric import Data
 # A type representing ASE-style periodic boundary condtions, which can be partial (the tuple case)
 PBC = Union[bool, Tuple[bool, bool, bool]]
 
+#print(AtomicDataDict.NODE_FEATURES_KEY.type())
 
 _DEFAULT_LONG_FIELDS: Set[str] = {
     AtomicDataDict.EDGE_INDEX_KEY,

@@ -378,6 +378,8 @@ def main(args=None, running_as_script: bool = True):
                     out[ORIGINAL_DATASET_INDEX_KEY] = torch.LongTensor(
                         this_batch_test_indexes
                     )
+                    print(out)
+                    print(output)
                     # append to the file
                     ase.io.write(
                         output,

@@ -133,7 +133,7 @@ def EnergyModel(
             out_field=AtomicDataDict.TOTAL_ENERGY_KEY,
         ),
     )
-
+    print("I am in EnergyModel")
     return SequentialGraphNetwork.from_parameters(
         shared_params=config,
         layers=layers,

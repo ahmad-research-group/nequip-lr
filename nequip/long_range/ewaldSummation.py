@@ -1,7 +1,9 @@
 import torch
 import math
+from nequip.data import AtomicDataDict
+import numpy as np
 
-
+print(AtomicDataDict.POSITIONS_KEY)
 
 '''
 Eelec = Ereal + Ereceip + Eself
@@ -29,7 +31,8 @@ def ewaldSummationPC(Q, pos, neighboring_atoms):
         Ereal = 0.0
         for i in range(len(Q)):
             for j in range(Nneigh):
-                if(i==j) continue
+                if(i==j):
+                    continue
                 rij = r[i, j]
                 Ereal += Q[i] * Q[j] * torch.erfc(rij / math.sqrt(2) / eta) / rij
         Ereal *= 0.5
@@ -38,6 +41,39 @@ def ewaldSummationPC(Q, pos, neighboring_atoms):
 
     ''' calculates receiprocal part of ewald Summation for point charges '''
     def ewaldReceip():
+
+        import numpy as np
+
+        def generate_k_points(cell_vectors, k_cutoff):
+            # Calculate the reciprocal lattice vectors
+            reciprocal_vectors = 2 * np.pi * np.linalg.inv(cell_vectors).T
+            
+            # Calculate the maximum index for each dimension
+            max_index_x = int(np.ceil(np.sqrt(k_cutoff) / np.linalg.norm(reciprocal_vectors[0])))
+            max_index_y = int(np.ceil(np.sqrt(k_cutoff) / np.linalg.norm(reciprocal_vectors[1])))
+            max_index_z = int(np.ceil(np.sqrt(k_cutoff) / np.linalg.norm(reciprocal_vectors[2])))
+            
+            # Create meshgrids for each dimension
+            indices_x = np.arange(-max_index_x, max_index_x + 1)
+            indices_y = np.arange(-max_index_y, max_index_y + 1)
+            indices_z = np.arange(-max_index_z, max_index_z + 1)
+            mesh_x, mesh_y, mesh_z = np.meshgrid(indices_x, indices_y, indices_z, indexing='ij')
+            
+            mesh_flat = np.stack([mesh_x.flatten(), mesh_y.flatten(), mesh_z.flatten()], axis=-1)
+            k_points = np.dot(mesh_flat, reciprocal_vectors)
+            
+            # Filter k-points within the Brillouin zone based on k_cutoff
+            k_norms = np.linalg.norm(k_points, axis=1)
+            k_points = k_points[k_norms <= k_cutoff]
+            
+            return k_points
+
+            #cell_vectors = np.array([[10, 0, 0], [0, 10, 0], [0, 0, 10]])  
+            #k_cutoff = 5.0  
+
+            #k_points = generate_k_points(cell_vectors, k_cutoff)
+            #print(k_points)
+
 
         def calculate_Sk(Q, r, k):
 
@@ -54,7 +90,7 @@ def ewaldSummationPC(Q, pos, neighboring_atoms):
         
         
         Ereceip = 0.0
-        for k_val in k:
+        for k_val in k_points:
             if not torch.all(k_val == 0):
                 k_mag_sq = torch.dot(k_val, k_val)
                 Sk = calculate_Sk(Q, r, k_val)
@@ -74,7 +110,7 @@ def ewaldSummationPC(Q, pos, neighboring_atoms):
     
     ewaldSumPC = realPart + receipPart + selfPart
 
-        return ewaldSumPC
+    return ewaldSumPC
 
 
 def ewaldSummationGauss():
