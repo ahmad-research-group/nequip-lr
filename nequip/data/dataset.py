@@ -690,7 +690,7 @@ class NpzDataset(AtomicInMemoryDataset):
             "forces": AtomicDataDict.FORCE_KEY,
             "Z": AtomicDataDict.ATOMIC_NUMBERS_KEY,
             "atomic_number": AtomicDataDict.ATOMIC_NUMBERS_KEY,
-            "charges": AtomicDataDict.CHARGE_KEY,
+            "charges": AtomicDataDict.CHARGES_KEY,
         },
         include_keys: List[str] = [],
         npz_fixed_field_keys: List[str] = [],

@@ -124,7 +124,7 @@ def EnergyModel(
     #         ),
     #     }
     # )
-    #AtomicDataDict.CHARGE_KEY
+    #AtomicDataDict.CHARGES_KEY
 
     layers.update(
     {
@@ -134,9 +134,9 @@ def EnergyModel(
             AtomwiseLinear,
             dict(irreps_out="1x0e", out_field=AtomicDataDict.PER_ATOM_ENERGY_KEY),
         ),
-        "output_hidden_to_charge": (
+        "output_hidden_to_charges": (
             AtomwiseLinear,
-            dict(irreps_out="1x0e", out_field=AtomicDataDict.CHARGE_KEY),
+            dict(irreps_out="1x0e", out_field=AtomicDataDict.CHARGES_KEY),
         ),
     }
 )

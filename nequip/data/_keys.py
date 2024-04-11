@@ -26,7 +26,7 @@ ATOMIC_NUMBERS_KEY: Final[str] = "atomic_numbers"
 # [n_atom, 1] long tensor
 ATOM_TYPE_KEY: Final[str] = "atom_types"
 #[n_atom, 1] long tensor
-CHARGE_KEY: Final[str] = "charges"
+CHARGES_KEY: Final[str] = "charges"
 
 BASIC_STRUCTURE_KEYS: Final[List[str]] = [
     POSITIONS_KEY,
@@ -36,6 +36,7 @@ BASIC_STRUCTURE_KEYS: Final[List[str]] = [
     PBC_KEY,
     ATOM_TYPE_KEY,
     ATOMIC_NUMBERS_KEY,
+    CHARGES_KEY,
 ]
 
 # A [n_edge, 3] tensor of displacement vectors associated to edges

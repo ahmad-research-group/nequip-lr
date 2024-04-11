@@ -26,7 +26,7 @@ def ewaldSummation(data):
     '''
 
 
-def ewaldSummationPC(AtomicDataDict.CHARGE_KEY, AtomicDataDict.POSITIONS_KEY, neighboring_atoms):
+def ewaldSummationPC(AtomicDataDict.CHARGES_KEY, AtomicDataDict.POSITIONS_KEY, neighboring_atoms):
 
     ''' 
     calculates real part of ewald Summation for point charges 
@@ -36,7 +36,7 @@ def ewaldSummationPC(AtomicDataDict.CHARGE_KEY, AtomicDataDict.POSITIONS_KEY, ne
         
     '''
     Nneigh = len(neighboring_atoms)
-    Nat = len(data[AtomicDataDict.CHARGE_KEY])
+    Nat = len(data[AtomicDataDict.CHARGES_KEY])
     eta = 0.005
 
     def ewaldReal(Nat, Nneigh, eta):
@@ -85,7 +85,7 @@ def ewaldSummationPC(AtomicDataDict.CHARGE_KEY, AtomicDataDict.POSITIONS_KEY, ne
             #print(k_points)
 
 
-        def calculate_Sk(AtomicDataDict.CHARGE_KEY, AtomicDataDict.POSITIONS_KEY, k):
+        def calculate_Sk(AtomicDataDict.CHARGES_KEY, AtomicDataDict.POSITIONS_KEY, k):
 
             '''
             args : charges[], positions[], k_points[], r[]
@@ -110,15 +110,15 @@ def ewaldSummationPC(AtomicDataDict.CHARGE_KEY, AtomicDataDict.POSITIONS_KEY, ne
 
 
     ''' calculates self part of ewald Summation for point charges '''
-    def ewaldSelf(AtomicDataDict.CHARGE_KEY):
+    def ewaldSelf(AtomicDataDict.CHARGES_KEY):
         Eself = 0
-        for q in data[AtomicDataDict.CHARGE_KEY]:
+        for q in data[AtomicDataDict.CHARGES_KEY]:
             Eself += torch.sum(-q**2) / (math.sqrt(2 * math.pi) * eta)
         return Eself
 
     realPart = ewaldReal(Nat, Nneigh, eta)
     receipPart = ewaldReceip(cell_vectors, k_cutoff)
-    selfPart = ewaldSelf(AtomicDataDict.CHARGE_KEY)
+    selfPart = ewaldSelf(AtomicDataDict.CHARGES_KEY)
     
     ewaldSumPC = realPart + receipPart + selfPart
 
@@ -127,11 +127,11 @@ def ewaldSummationPC(AtomicDataDict.CHARGE_KEY, AtomicDataDict.POSITIONS_KEY, ne
 
 def ewaldSummationGauss():
 
-    energyPC = ewaldSummationPC(AtomicDataDict.CHARGE_KEY, AtomicDataDict.POSITIONS_KEY, neighboring_atoms)
+    energyPC = ewaldSummationPC(AtomicDataDict.CHARGES_KEY, AtomicDataDict.POSITIONS_KEY, neighboring_atoms)
     gamma = torch.sqrt(sigma[i],sigma[j])
     sigma = ...
 
-    def calc_subPart(AtomicDataDict.CHARGE_KEY, AtomicDataDict.POSITIONS_KEY, gamma, sigma):
+    def calc_subPart(AtomicDataDict.CHARGES_KEY, AtomicDataDict.POSITIONS_KEY, gamma, sigma):
         energy = torch.tensor(0.0)  # Initialize energy as a tensor
         
         # First term of the equation
@@ -147,7 +147,7 @@ def ewaldSummationGauss():
         return energy
 
     
-    subtraction_part = calc_subPart(AtomicDataDict.CHARGE_KEY, AtomicDataDict.POSITIONS_KEY, gamma, sigma)
+    subtraction_part = calc_subPart(AtomicDataDict.CHARGES_KEY, AtomicDataDict.POSITIONS_KEY, gamma, sigma)
     energyGaussian = energyPC - subtraction_part
 
     return energyGaussian
