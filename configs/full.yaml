@@ -85,15 +85,15 @@ use_sc: true                                                                    
 # in most cases working with the ase option and an extxyz file is by far the simplest way to do it and we strongly recommend using this
 # simply provide a single extxyz file that contains the structures together with energies and forces (generated with ase.io.write(atoms, format='extxyz', append=True))
 
-# # for extxyz file
-# dataset: ase
-# dataset_file_name: H2.extxyz
-# ase_args:
-#   format: extxyz
-# include_keys:
-#   - user_label
-# key_mapping:
-#   user_label: label0
+# for extxyz file
+dataset: ase
+dataset_file_name: output.extxyz
+ase_args:
+  format: extxyz
+include_keys:
+  - user_label
+key_mapping:
+  user_label: label0
 
 
 # alternatively, you can read directly from a VASP OUTCAR file (this will only read that single OUTCAR)
@@ -112,23 +112,23 @@ use_sc: true                                                                    
 # key_mapping is used to map the key in the npz file to the NequIP default values (see data/_key.py)
 # all arrays are expected to have the shape of (nframe, natom, ?) except the fixed fields
 # note that if your data set uses pbc, you need to also pass an array that maps to the nequip "pbc" key
-dataset: npz                                                                       # type of data set, can be npz or ase
-dataset_url: http://quantum-machine.org/gdml/data/npz/toluene_ccsd_t.zip           # url to download the npz. optional
-dataset_file_name: ./benchmark_data/toluene_ccsd_t-train.npz                       # path to data set file
-key_mapping:
-  z: atomic_numbers                                                                # atomic species, integers
-  E: total_energy                                                                  # total potential eneriges to train to
-  F: forces                                                                        # atomic forces to train to
-  R: pos                                                                           # raw atomic positions
-npz_fixed_field_keys:                                                              # fields that are repeated across different examples
-  - atomic_numbers
+# dataset: npz                                                                       # type of data set, can be npz or ase
+# dataset_url: http://quantum-machine.org/gdml/data/npz/toluene_ccsd_t.zip           # url to download the npz. optional
+# dataset_file_name: ./benchmark_data/toluene_ccsd_t-train.npz                       # path to data set file
+# key_mapping:
+#   z: atomic_numbers                                                                # atomic species, integers
+#   E: total_energy                                                                  # total potential eneriges to train to
+#   F: forces                                                                        # atomic forces to train to
+#   R: pos                                                                           # raw atomic positions
+# npz_fixed_field_keys:                                                              # fields that are repeated across different examples
+#   - atomic_numbers
 
 # A list of chemical species found in the data. The NequIP atom types will be named after the chemical symbols and ordered by atomic number in ascending order.
 # (In this case, NequIP's internal atom type 0 will be named H and type 1 will be named C.)
 # Atoms in the input will be assigned NequIP atom types according to their atomic numbers.
 chemical_symbols:
-  - H
-  - C
+  - Li
+  - Cl
 
 # Alternatively, you may explicitly specify which chemical species in the input will map to NequIP atom type 0, which to atom type 1, and so on.
 # Other than providing an explicit order for the NequIP atom types, this option behaves the same as `chemical_symbols`
@@ -157,7 +157,7 @@ chemical_symbols:
 # validation_dataset_file_name: xxx.xyz                                            # need to be a format accepted by ase.io.read
 
 # logging
-wandb: true                                                                        # we recommend using wandb for logging
+wandb: false                                                                        # we recommend using wandb for logging
 wandb_project: toluene-example                                                     # project name used in wandb
 wandb_watch: false
 
@@ -174,8 +174,8 @@ save_checkpoint_freq: -1                                                        
 save_ema_checkpoint_freq: -1                                                       # frequency to save the intermediate ema checkpoint. no saving of intermediate checkpoints when the value is not positive.
 
 # training
-n_train: 100                                                                       # number of training data
-n_val: 50                                                                          # number of validation data
+n_train: 16                                                                      # number of training data
+n_val: 5                                                                       # number of validation data
 learning_rate: 0.005                                                               # learning rate, we found values between 0.01 and 0.005 to work best - this is often one of the most important hyperparameters to tune
 batch_size: 5                                                                      # batch size, we found it important to keep this small for most applications including forces (1-5); for energy-only training, higher batch sizes work better
 validation_batch_size: 10                                                          # batch size for evaluating the model during validation. This does not affect the training results, but using the highest value possible (<=n_val) without running out of memory will speed up your training.
@@ -205,12 +205,22 @@ early_stopping_lower_bounds:                                                    
 early_stopping_upper_bounds:                                                       # stop early if a metric value is higher than the bound
   cumulative_wall: 1.0e+100
 
-# loss function
-loss_coeffs:                                                                       # different weights to use in a weighted loss functions
-  forces: 1                                                                        # if using PerAtomMSELoss, a default weight of 1:1 on each should work well
-  total_energy:                                                                    
+# # loss function
+# loss_coeffs:                                                                       # different weights to use in a weighted loss functions
+#   forces: 1                                                                        # if using PerAtomMSELoss, a default weight of 1:1 on each should work well
+#   total_energy:                                                                    
+#     - 1
+#     - PerAtomMSELoss
+
+loss_coeffs:
+  forces: 1
+  total_energy:
     - 1
     - PerAtomMSELoss
+  charges:
+    - 1
+    - L1Loss
+
 # note that the ratio between force and energy loss matters for the training process. One may consider using 1:1 with the PerAtomMSELoss. If the energy loss still significantly dominate the loss function at the initial epochs, tune the energy loss weight lower helps the training a lot.
 
 

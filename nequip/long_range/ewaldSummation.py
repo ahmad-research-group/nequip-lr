@@ -18,6 +18,14 @@ Eself = - sum(i=1 to Nat) {Qi**2}/ sqrt(2*pi)/ eta
 
 '''
 
+def ewaldSummation(data):
+    '''
+    Args:
+    output data[]
+
+    '''
+
+
 def ewaldSummationPC(AtomicDataDict.CHARGE_KEY, AtomicDataDict.POSITIONS_KEY, neighboring_atoms):
 
     ''' 
@@ -120,7 +128,7 @@ def ewaldSummationPC(AtomicDataDict.CHARGE_KEY, AtomicDataDict.POSITIONS_KEY, ne
 def ewaldSummationGauss():
 
     energyPC = ewaldSummationPC(AtomicDataDict.CHARGE_KEY, AtomicDataDict.POSITIONS_KEY, neighboring_atoms)
-    gamma = ...
+    gamma = torch.sqrt(sigma[i],sigma[j])
     sigma = ...
 
     def calc_subPart(AtomicDataDict.CHARGE_KEY, AtomicDataDict.POSITIONS_KEY, gamma, sigma):
