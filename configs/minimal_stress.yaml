@@ -23,7 +23,7 @@ dataset: ase                                                                    
 dataset_url: https://qmml.org/Datasets/w-14.zip             # url to download the npz. optional
 dataset_file_name: ./benchmark_data/w-14.xyz                        # path to data set file
 dataset_key_mapping:
-  force: forces
+  forces: forces
 dataset_include_keys:
   - virial
 # A mapping of chemical species to type indexes is necessary if the dataset is provided with atomic numbers instead of type indexes.

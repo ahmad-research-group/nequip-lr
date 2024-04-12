@@ -26,7 +26,7 @@ ATOMIC_NUMBERS_KEY: Final[str] = "atomic_numbers"
 # [n_atom, 1] long tensor
 ATOM_TYPE_KEY: Final[str] = "atom_types"
 #[n_atom, 1] long tensor
-CHARGES_KEY: Final[str] = "charges"
+CHARGES_KEY: Final[str] = "initial_charges"
 
 BASIC_STRUCTURE_KEYS: Final[List[str]] = [
     POSITIONS_KEY,

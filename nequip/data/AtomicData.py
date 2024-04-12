@@ -381,7 +381,7 @@ class AtomicData(Data):
 
         km = {
             "forces": AtomicDataDict.FORCE_KEY,
-            "charges": AtomicDataDict.CHARGES_KEY,
+            "initial_charges": AtomicDataDict.CHARGES_KEY,
             "energy": AtomicDataDict.TOTAL_ENERGY_KEY,
         }
         km.update(key_mapping)
@@ -495,8 +495,8 @@ class AtomicData(Data):
         batch = getattr(self, AtomicDataDict.BATCH_KEY, None)
         energy = getattr(self, AtomicDataDict.TOTAL_ENERGY_KEY, None)
         energies = getattr(self, AtomicDataDict.PER_ATOM_ENERGY_KEY, None)
-        force = getattr(self, AtomicDataDict.FORCE_KEY, None)
-        charges = getattr(self, AtomicDataDict.CHARGES_KEY, None)
+        forces = getattr(self, AtomicDataDict.FORCE_KEY, None)
+        initial_charges = getattr(self, AtomicDataDict.CHARGES_KEY, None)
         do_calc = any(
             k in self
             for k in [
@@ -561,9 +561,9 @@ class AtomicData(Data):
                 if energy is not None:
                     fields["energy"] = energy[batch_idx].cpu().numpy()
                 if force is not None:
-                    fields["forces"] = force[mask].cpu().numpy()
-                if charges is not None:
-                    fields["charges"] = charges[mask].cpu().numpy()
+                    fields["forces"] = forces[mask].cpu().numpy()
+                if initial_charges is not None:
+                    fields["initial_charges"] = initial_charges[mask].cpu().numpy()
                 if AtomicDataDict.STRESS_KEY in self:
                     fields["stress"] = full_3x3_to_voigt_6_stress(
                         self["stress"].view(-1, 3, 3)[batch_idx].cpu().numpy()

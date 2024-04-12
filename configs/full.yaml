@@ -217,9 +217,6 @@ loss_coeffs:
   total_energy:
     - 1
     - PerAtomMSELoss
-  charges: 1
-    # - 1
-    # - L1Loss
 
 # note that the ratio between force and energy loss matters for the training process. One may consider using 1:1 with the PerAtomMSELoss. If the energy loss still significantly dominate the loss function at the initial epochs, tune the energy loss weight lower helps the training a lot.
 

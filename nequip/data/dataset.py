@@ -686,11 +686,11 @@ class NpzDataset(AtomicInMemoryDataset):
         key_mapping: Dict[str, str] = {
             "positions": AtomicDataDict.POSITIONS_KEY,
             "energy": AtomicDataDict.TOTAL_ENERGY_KEY,
-            "force": AtomicDataDict.FORCE_KEY,
+            "forces": AtomicDataDict.FORCE_KEY,
             "forces": AtomicDataDict.FORCE_KEY,
             "Z": AtomicDataDict.ATOMIC_NUMBERS_KEY,
             "atomic_number": AtomicDataDict.ATOMIC_NUMBERS_KEY,
-            "charges": AtomicDataDict.CHARGES_KEY,
+            "initial_charges": AtomicDataDict.CHARGES_KEY,
         },
         include_keys: List[str] = [],
         npz_fixed_field_keys: List[str] = [],
