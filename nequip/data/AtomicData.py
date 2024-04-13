@@ -386,7 +386,9 @@ class AtomicData(Data):
         }
         km.update(key_mapping)
         key_mapping = km
-
+        
+        # appending the charge keys
+        include_keys.append("initial_charges")
         add_fields = {}
 
         # Get info from atoms.arrays; lowest priority. copy first
@@ -404,7 +406,7 @@ class AtomicData(Data):
                 if k in include_keys
             }
         )
-
+       # print("I am in AtomicData", add_fields['total_energy'])
         if atoms.calc is not None:
 
             if isinstance(

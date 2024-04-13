@@ -8,8 +8,8 @@
 # run_name contains logfiles and saved models
 # process contains processed data sets
 # if 'root'/'run_name' exists, 'root'/'run_name'_'year'-'month'-'day'-'hour'-'min'-'s' will be used instead.
-root: results/toluene
-run_name: example-run-toluene
+root: results/LiCl
+run_name: example-run-LiCl
 seed: 123                                                                         # model seed
 dataset_seed: 456                                                                 # data set seed
 append: true                                                                      # set true if a restarted run should append to the previous log file
@@ -217,6 +217,9 @@ loss_coeffs:
   total_energy:
     - 1
     - PerAtomMSELoss
+  initial_charges: 
+    - 2
+    - MSELoss
 
 # note that the ratio between force and energy loss matters for the training process. One may consider using 1:1 with the PerAtomMSELoss. If the energy loss still significantly dominate the loss function at the initial epochs, tune the energy loss weight lower helps the training a lot.
 
