@@ -92,7 +92,8 @@ class AtomwiseReduce(GraphModuleMixin, torch.nn.Module):
         )
         if self.constant != 1.0:
             data[self.out_field] = data[self.out_field] * self.constant
-        print("Total Energy ",data.keys())
+
+        print("Output charges (may be) ", data['initial_charges'])
         '''
         dict_keys(['edge_index', 'pos', 'batch', 'ptr', 'pbc', 'cell', 'edge_cell_shift', 
         'r_max', 'atom_types', 'node_attrs', 'node_features', 'edge_vectors', 'edge_attrs', 

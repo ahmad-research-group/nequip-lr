@@ -275,7 +275,7 @@ class Trainer:
         output = Output.get_output(dict(**_local_kwargs, **kwargs))
         self.output = output
 
-        print(output)
+        #print(output)
 
         self.logfile = output.open_logfile("log", propagate=True)
         self.epoch_log = output.open_logfile("metrics_epoch.csv", propagate=False)
@@ -800,7 +800,7 @@ class Trainer:
         # Do any target rescaling
         data = data.to(self.torch_device)
         data = AtomicData.to_AtomicDataDict(data)
-        #print(data.keys())
+        #print('I am in trainer.py',data['initial_charges'])
         data_unscaled = data
         for layer in self.rescale_layers:
             # This means that self.model is RescaleOutputs

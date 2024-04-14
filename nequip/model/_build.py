@@ -98,5 +98,8 @@ def model_from_config(
             raise TypeError(
                 f"Builder {builder.__name__} didn't return a GraphModuleMixin, got {type(model)} instead"
             )
+    #print(model)
+
+    
 
     return model

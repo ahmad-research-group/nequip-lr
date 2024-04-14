@@ -124,7 +124,6 @@ def EnergyModel(
     #         ),
     #     }
     # )
-    #AtomicDataDict.CHARGES_KEY
 
     layers.update(
     {
@@ -133,14 +132,15 @@ def EnergyModel(
         "output_hidden_to_scalar": (
             AtomwiseLinear,
             dict(irreps_out="1x0e", out_field=AtomicDataDict.PER_ATOM_ENERGY_KEY),
+            #dict(irreps_out="1x0e", out_field=AtomicDataDict.CHARGES_KEY),
         ),
-        "output_hidden_to_charges": (
-            AtomwiseLinear,
-            dict(irreps_out="1x0e", out_field=AtomicDataDict.CHARGES_KEY),
-        ),
+        # "output_hidden_to_charges": (
+        #     AtomwiseLinear,
+        #     dict(irreps_out="8x0e", out_field=AtomicDataDict.CHARGES_KEY),
+        # ),
     }
+    
 )
-
 
     layers["total_energy_sum"] = (
         AtomwiseReduce,
@@ -150,8 +150,31 @@ def EnergyModel(
             out_field=AtomicDataDict.TOTAL_ENERGY_KEY, 
         ),
     )
-    print("I am in EnergyModel")
-    return SequentialGraphNetwork.from_parameters(
+
+    
+
+    #print(layers)
+
+    model = SequentialGraphNetwork.from_parameters(
         shared_params=config,
         layers=layers,
     )
+
+    model.insert_from_parameters(
+        # see nequip/model/_eng.py for the names of all modules in a NequIP model
+        # we put it after the 2nd to last linear projection into the smaller node features
+        after="conv_to_output_hidden",
+        # name for our new module
+        name="custom_output_head",
+        # hardcoded parameters from the builder
+        # we want in this case a 1 scalar prediction (1x0e) in the field
+        params=dict(irreps_out="1x0e", out_field=AtomicDataDict.CHARGES_KEY),
+        # config from which to pull other parameters
+        shared_params=config,
+        # the module to add:
+        builder=AtomwiseLinear,
+    )
+
+    #print(model)
+    return model
+

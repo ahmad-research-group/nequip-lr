@@ -386,7 +386,7 @@ class AtomicData(Data):
         }
         km.update(key_mapping)
         key_mapping = km
-        
+
         # appending the charge keys
         include_keys.append("initial_charges")
         add_fields = {}
@@ -406,7 +406,7 @@ class AtomicData(Data):
                 if k in include_keys
             }
         )
-       # print("I am in AtomicData", add_fields['total_energy'])
+        print("Input charges", add_fields['initial_charges'])
         if atoms.calc is not None:
 
             if isinstance(
