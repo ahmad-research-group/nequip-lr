@@ -116,6 +116,7 @@ class NequIPCalculator(Calculator):
 
         # predict + extract data
         out = self.model(data)
+        
         self.results = {}
         # only store results the model actually computed to avoid KeyErrors
         if AtomicDataDict.TOTAL_ENERGY_KEY in out:
@@ -149,3 +150,10 @@ class NequIPCalculator(Calculator):
             # ase wants voigt format
             stress_voigt = full_3x3_to_voigt_6_stress(stress)
             self.results["stress"] = stress_voigt
+        
+        #store charges in results
+
+        if AtomicDataDict.CHARGES_KEY in out:
+            charges = out[AtomicDataDict.CHARGES_KEY].detach().cpu().numpy()
+            self.results['charges'] = charges
+        

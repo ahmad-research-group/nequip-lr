@@ -3,7 +3,7 @@ import logging
 
 from e3nn import o3
 
-from nequip.data import AtomicDataDict, AtomicDataset
+from nequip.data import AtomicDataDict, AtomicDataset, register_fields
 from nequip.nn import (
     SequentialGraphNetwork,
     AtomwiseLinear,
@@ -17,6 +17,8 @@ from nequip.nn.embedding import (
 )
 
 from . import builder_utils
+
+register_fields(node_fields=[AtomicDataDict.CHARGES_KEY])
 
 
 def SimpleIrrepsConfig(config, prefix: Optional[str] = None):
@@ -134,10 +136,6 @@ def EnergyModel(
             dict(irreps_out="1x0e", out_field=AtomicDataDict.PER_ATOM_ENERGY_KEY),
             #dict(irreps_out="1x0e", out_field=AtomicDataDict.CHARGES_KEY),
         ),
-        # "output_hidden_to_charges": (
-        #     AtomwiseLinear,
-        #     dict(irreps_out="8x0e", out_field=AtomicDataDict.CHARGES_KEY),
-        # ),
     }
     
 )
@@ -150,7 +148,6 @@ def EnergyModel(
             out_field=AtomicDataDict.TOTAL_ENERGY_KEY, 
         ),
     )
-
     
 
     #print(layers)
@@ -166,7 +163,7 @@ def EnergyModel(
         after="conv_to_output_hidden",
         # name for our new module
         name="custom_output_head",
-        # hardcoded parameters from the builder
+        # hardcoded parameters from the builder  
         # we want in this case a 1 scalar prediction (1x0e) in the field
         params=dict(irreps_out="1x0e", out_field=AtomicDataDict.CHARGES_KEY),
         # config from which to pull other parameters
@@ -175,6 +172,7 @@ def EnergyModel(
         builder=AtomwiseLinear,
     )
 
-    #print(model)
+    #print(config)
+    print(model)
     return model
 
