@@ -92,12 +92,23 @@ class AtomwiseReduce(GraphModuleMixin, torch.nn.Module):
         )
         if self.constant != 1.0:
             data[self.out_field] = data[self.out_field] * self.constant
+       # print("predicted data dict: ", data)
+#        if('initial_charges' in data.keys()):
+           # print(data[AtomicDataDict.PER_ATOM_ENERGY_KEY].size())
 
-        print("Output charges (may be) ", data['initial_charges'])
+
+
+        print("I am in atomwise, tot energy",data['total_energy'])
+        print("I am in atomwise, init charges",data['initial_charges'])
+        print("I am in atomwise, positions",data['pos'])
+
+
+            
+
         '''
         dict_keys(['edge_index', 'pos', 'batch', 'ptr', 'pbc', 'cell', 'edge_cell_shift', 
         'r_max', 'atom_types', 'node_attrs', 'node_features', 'edge_vectors', 'edge_attrs', 
-        'edge_lengths', 'edge_embedding', 'atomic_energy', 'total_energy'])
+        'edge_lengths', 'edge_embedding', 'atomic_energy', 'total_energy']) 
         '''
 
         return data
