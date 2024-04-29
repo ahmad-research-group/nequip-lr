@@ -11,6 +11,7 @@ from nequip.data import AtomicDataDict
 from nequip.data.transforms import TypeMapper
 from ._graph_mixin import GraphModuleMixin
 
+from nequip.long_range.HirshFeld import *
 
 class AtomwiseOperation(GraphModuleMixin, torch.nn.Module):
     def __init__(self, operation, field: str, irreps_in=None):
@@ -92,18 +93,22 @@ class AtomwiseReduce(GraphModuleMixin, torch.nn.Module):
         )
         if self.constant != 1.0:
             data[self.out_field] = data[self.out_field] * self.constant
-       # print("predicted data dict: ", data)
-#        if('initial_charges' in data.keys()):
-           # print(data[AtomicDataDict.PER_ATOM_ENERGY_KEY].size())
+       
+        '''
+        for batch_size = 1, it's working.
+        for batch_size > 1, we need to get number of atoms (Nat) in the system from input file. Then for first Nat coordinates in data['pos],
+        calculate Eelect and then add that to Eshort(calculated by Nequip), first item of data['total_energy']. Follow same procedure for i*Nat to 2*i*Nat coordinates 
+        and add it to data['total_energy'][i]. 
+        
+        '''
+        positions = data['pos']
+        r_max = 5
+        Eelect = getEelect(positions, r_max)
 
+        # total_energy = Eshort + Eelect
+        data['total_energy'] = data['total_energy'] + Eelect
+        
 
-
-        print("I am in atomwise, tot energy",data['total_energy'])
-        print("I am in atomwise, init charges",data['initial_charges'])
-        print("I am in atomwise, positions",data['pos'])
-
-
-            
 
         '''
         dict_keys(['edge_index', 'pos', 'batch', 'ptr', 'pbc', 'cell', 'edge_cell_shift', 
