@@ -485,13 +485,16 @@ class AtomicData(Data):
             )
         if AtomicDataDict.ATOMIC_NUMBERS_KEY in self:
             atomic_nums = self.atomic_numbers
+            print('atomic_nums=',  atomic_nums)
         elif type_mapper is not None and type_mapper.has_chemical_symbols:
             atomic_nums = type_mapper.untransform(self[AtomicDataDict.ATOM_TYPE_KEY])
+            print('atomic_nums=', atomic_nums)
         else:
             warnings.warn(
                 "AtomicData.to_ase(): self didn't contain atomic numbers... using atom_type as atomic numbers instead, but this means the chemical symbols in ASE (outputs) will be wrong"
             )
             atomic_nums = self[AtomicDataDict.ATOM_TYPE_KEY]
+            print('atomic_nums= ',  atomic_nums)
         pbc = getattr(self, AtomicDataDict.PBC_KEY, None)
         cell = getattr(self, AtomicDataDict.CELL_KEY, None)
         batch = getattr(self, AtomicDataDict.BATCH_KEY, None)

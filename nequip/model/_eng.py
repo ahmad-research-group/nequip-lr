@@ -173,6 +173,6 @@ def EnergyModel(
     )
 
     #print(config)
-    print(model)
+    # print(model)
     return model
 

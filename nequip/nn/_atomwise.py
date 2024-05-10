@@ -11,7 +11,7 @@ from nequip.data import AtomicDataDict
 from nequip.data.transforms import TypeMapper
 from ._graph_mixin import GraphModuleMixin
 
-from nequip.long_range.HirshFeld import *
+from nequip.long_range.ewaldSummation import *
 
 class AtomwiseOperation(GraphModuleMixin, torch.nn.Module):
     def __init__(self, operation, field: str, irreps_in=None):
@@ -101,15 +101,17 @@ class AtomwiseReduce(GraphModuleMixin, torch.nn.Module):
         and add it to data['total_energy'][i]. 
         
         '''
-        positions = data['pos']
-        r_max = 5
-        Eelect = getEelect(positions, r_max)
 
-        # total_energy = Eshort + Eelect
-        data['total_energy'] = data['total_energy'] + Eelect
-        
+        # positions = data['pos']
+        # r_max = 5
+        # Eelect = ewaldSummation(data)
+        # Eshort = data['total_energy']
+        # print("without ewald", data['total_energy'])
+        # data['total_energy'] = data['total_energy'] + Eelect
+        # print("with ewald", data['total_energy'])
+        # print('cell',data['cell'])
 
-
+#        print(data[AtomicDataDict.ATOMIC_NUMBERS_KEY])
         '''
         dict_keys(['edge_index', 'pos', 'batch', 'ptr', 'pbc', 'cell', 'edge_cell_shift', 
         'r_max', 'atom_types', 'node_attrs', 'node_features', 'edge_vectors', 'edge_attrs', 
