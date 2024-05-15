@@ -104,10 +104,10 @@ class AtomwiseReduce(GraphModuleMixin, torch.nn.Module):
 
         # positions = data['pos']
         # r_max = 5
-        # Eelect = ewaldSummation(data)
-        # Eshort = data['total_energy']
+        Eelect = ewaldSummation(data)
+        Eshort = data['total_energy']
         # print("without ewald", data['total_energy'])
-        # data['total_energy'] = data['total_energy'] + Eelect
+        data['total_energy'] = data['total_energy'] + Eelect
         # print("with ewald", data['total_energy'])
         # print('cell',data['cell'])
 

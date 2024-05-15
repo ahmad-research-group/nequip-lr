@@ -16,21 +16,10 @@ S(k) = sum(i=1 to Nat) {Qi exp(i*k . ri)}
 Eself = - sum(i=1 to Nat) {Qi**2}/ sqrt(2*pi)/ eta
 
 # '''
-# pos = torch.tensor([[2.7320, 4.3236, 3.5625],
-#         [0.7503, 1.2541, 3.7962],
-#         [1.0590, 4.2208, 5.0442],
-#         [2.9842, 5.0778, 5.0649],
-#         [1.3311, 4.7296, 3.2238],
-#         [4.5336, 4.5982, 1.7281],
-#         [0.0900, 4.9429, 2.9770],
-#         [1.3005, 2.9135, 4.8747]], dtype = float)
 
 
 def build_gamma(sigma,Nat):
     gamma = np.zeros((Nat, Nat))
-    print('Nat = ',Nat)
-    print(gamma.shape)
-    print(sigma.shape)
     for i in range(Nat):
         for j in range(Nat):
             gamma[i][j] = np.sqrt(sigma[i]**2 + sigma[j]**2)
@@ -54,19 +43,11 @@ def build_r(pos, r_max):
     return r
 
 
-#cell vector
-# cell = [[5.0842, 0.0000, 0.0000],
-#          [0.0000, 5.0842, 0.0000],
-#          [0.0000, 0.0000, 5.0842]]
 
-# Nat = len(pos)
 r_max = 10
-# r = build_r(pos, r_max)
 X = [0.98, 0.98, 0.98, 0.98, 3.16, 3.16, 3.16, 3.16]
-# Q = [0.5,1,1,1,-1,-1,-1,-0.5]
 J = [0.1,0.1,0.1,0.1,0.2,0.2,0.2,0.2]
 sigma = torch.tensor([2,2,2,2,1,1,1,1])
-# gamma = build_gamma(sigma)
 k_cutoff = 5.0
 
 
@@ -79,8 +60,6 @@ def ewaldSummationPC(Q, pos, cell, Nat,r):
         charges[], positions[], neighboring_atoms[Nneigh]
         
     '''
-    # Nneigh = len(neighboring_atoms)
-    # Nat = len(data[AtomicDataDict.CHARGES_KEY])
     eta = 0.005
     def ewaldReal(Nat, eta,Q):
         Ereal = 0.0
@@ -115,66 +94,19 @@ def ewaldSummationPC(Q, pos, cell, Nat,r):
             mesh_x, mesh_y, mesh_z = np.meshgrid(indices_x, indices_y, indices_z, indexing='ij')
 
             mesh_flat = np.stack([mesh_x.flatten(), mesh_y.flatten(), mesh_z.flatten()], axis=-1)
-            # print(mesh_flat.shape)
-            # print(reciprocal_vectors.shape)
             k_points = np.dot(mesh_flat, reciprocal_vectors)
-
-            # print(k_points)
-            # # Filter k-points within the Brillouin zone based on k_cutoff
-            # k_norms = np.linalg.norm(k_points, axis=1)
-            # mask = k_norms <= k_cutoff
-            # k_points_cutoff = []
-            # for i, norm in enumerate(k_norms):
-            #   if (norm[0]<k_cutoff):
-            #     k_points_cutoff.append(k_points[i])
-            # # k_points = k_points_cutoff
-            # print(k_points)
-            # return k_points_cutoff
             return torch.tensor(k_points,dtype = float)           
 
-            # dont exclude k zero
-
-            #cell_vectors = np.array([[10, 0, 0], [0, 10, 0], [0, 0, 10]])  
-            #k_cutoff = 5.0  
-
         k_points = generate_k_points(cell, k_cutoff)
-            #print(k_points)
-
-
-        # def calculate_Sk(charges, posi, k):
-
-        #     '''
-        #     args : charges[], positions[], k_points[], r[]
-
-        #     '''
-        #     # k = torch.tensor(k)
-        #     # Sk = torch.zeros_like(k, dtype=torch.complex32)
-        #     exp_term = torch.exp(1j * torch.dot(k, posi))
-        #     for q in Q:
-        #       # print("...........")
-        #       # print("r.....",torch.tensor(r[i]))
-        #       k = k.float()
-        #       k = k.flatten()
-        #       # print(k)
-        #       # print(posi)
-        #       # print(torch.tensor(pos[i]).type())
-        #       exp_term = torch.exp(1j * torch.dot(torch.tensor(k), torch.tensor(posi)))
-        #       Sk += q * exp_term
-        #     return Sk
-        
-        
-        
         Ereceip = 0.0
         for k_val in k_points:
-            k_mag_sq = torch.dot(k_val, k_val)
+            k_mag_sq = torch.dot(k_val.flatten(), k_val.flatten())
             if torch.abs(k_mag_sq)>1e-6:    
                 Sk = 0
                 for i in range(Nat):
-                    
-                    Sk = Sk + Q[i] * torch.exp(1j * torch.dot(k_val.float(), pos[i,:]))
+                    Sk = Sk + Q[i] * torch.exp(1j * torch.dot(k_val.flatten().float(), pos[i,:]))
                 Ereceip += torch.exp(-eta**2 * k_mag_sq / 2) / k_mag_sq * torch.abs(Sk)**2
         V = torch.linalg.det(torch.tensor(cell))
-        print(V)
         Ereceip *= 2 * math.pi / V
         return Ereceip
 
@@ -198,9 +130,6 @@ def ewaldSummationPC(Q, pos, cell, Nat,r):
 def ewaldSummationGauss(pos, charges,Nat,r,gamma,cell):
     Q = charges
     energyPC = ewaldSummationPC(Q, pos,cell,Nat,r)
-    # gamma = torch.sqrt(sigma[i],sigma[j])
-    # sigma = ...
-    # print(energyPC)
     def calc_subPart(charges, pos, gamma, sigma):
         energy = torch.tensor([0.0])  # Initialize energy as a tensor
         # First term of the equation
@@ -218,9 +147,6 @@ def ewaldSummationGauss(pos, charges,Nat,r,gamma,cell):
 
     energyGaussian = energyPC - subtraction_part
     return energyGaussian
-# gauss = ewaldSummationGauss()
-
-
 
 def ewaldSummation(data):
     '''
@@ -234,13 +160,7 @@ def ewaldSummation(data):
     Nat = len(pos)
     r = build_r(pos, r_max)
     gamma = build_gamma(sigma,Nat)
-    cell = data['cell'][0]
-    print(cell[0])
+    cell = data['cell']
     return ewaldSummationGauss(pos,Q,Nat,r,gamma,cell)
-
-# data = {'charges':Q, 'pos':pos}
-
-# ans = ewaldSummation(data)
-# print(ans)
 
 
