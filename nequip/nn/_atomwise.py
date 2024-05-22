@@ -4,7 +4,6 @@ from typing import Optional, List
 import torch
 import torch.nn.functional
 from torch_runstats.scatter import scatter
-
 from e3nn.o3 import Linear
 
 from nequip.data import AtomicDataDict
@@ -105,13 +104,15 @@ class AtomwiseReduce(GraphModuleMixin, torch.nn.Module):
         # positions = data['pos']
         # r_max = 5
         Eelect = ewaldSummation(data)
-        Eshort = data['total_energy']
-        # print("without ewald", data['total_energy'])
+        # print(Eelect)
+        # Eshort = data['total_energy']
+        print("without ewald", data['total_energy'])
         data['total_energy'] = data['total_energy'] + Eelect
-        # print("with ewald", data['total_energy'])
+        print("with ewald", data['total_energy'])
         # print('cell',data['cell'])
 
-#        print(data[AtomicDataDict.ATOMIC_NUMBERS_KEY])
+        # print(data['atom_types'])
+        
         '''
         dict_keys(['edge_index', 'pos', 'batch', 'ptr', 'pbc', 'cell', 'edge_cell_shift', 
         'r_max', 'atom_types', 'node_attrs', 'node_features', 'edge_vectors', 'edge_attrs', 

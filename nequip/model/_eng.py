@@ -176,3 +176,59 @@ def EnergyModel(
     # print(model)
     return model
 
+def EwaldSummationEnergyModel(
+    config, initialize: bool, dataset: Optional[AtomicDataset] = None
+) -> SequentialGraphNetwork:
+    """Base default energy model archetecture.
+
+    For minimal and full configuration option listings, see ``minimal.yaml`` and ``example.yaml``.
+    """
+    logging.debug("Start building the network model")
+
+    builder_utils.add_avg_num_neighbors(
+        config=config, initialize=initialize, dataset=dataset
+    )
+
+    num_layers = config.get("num_layers", 3)
+
+    layers = {
+        # -- Encode --
+        "one_hot": OneHotAtomEncoding,
+        "spharm_edges": SphericalHarmonicEdgeAttrs,
+        "radial_basis": RadialBasisEdgeEncoding,
+        # -- Embed features --
+        "chemical_embedding": AtomwiseLinear,
+    }
+
+    # add convnet layers
+    # insertion preserves order
+    for layer_i in range(num_layers):
+        layers[f"layer{layer_i}_convnet"] = ConvNetLayer
+
+
+    layers.update(
+    {
+        # -- output block --
+        "conv_to_output_hidden": AtomwiseLinear,
+        "output_hidden_to_scalar": (
+            AtomwiseLinear,
+            dict(irreps_out="1x0e", out_field=AtomicDataDict.PER_ATOM_CHARGES_KEY),
+        ),
+    }
+    
+)
+
+    layers["total_charges_sum"] = (
+        AtomwiseReduce,
+        dict(
+            reduce="sum",
+            field=AtomicDataDict.CHARGES_KEY,
+            out_field=AtomicDataDict.TOTAL_CHARGES_KEY
+        ),
+    )
+
+    model = SequentialGraphNetwork.from_parameters(
+        shared_params=config,
+        layers=layers,
+    )
+    return model
