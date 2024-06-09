@@ -255,13 +255,13 @@ def PerSpeciesRescale(
     )
 
     params["arguments_in_dataset_units"] = arguments_in_dataset_units
-    # model.insert_from_parameters(
-    #     before="total_energy_sum",
-    #     name=module_prefix,
-    #     shared_params=config,
-    #     builder=PerSpeciesScaleShift,
-    #     params=params,
-    # )
+    model.insert_from_parameters(
+        before="total_energy_sum",
+        name=module_prefix,
+        shared_params=config,
+        builder=PerSpeciesScaleShift,
+        params=params,
+    )
 
     # == Build the model ==
     return model

@@ -9,11 +9,11 @@
 # process contains processed data sets
 # if 'root'/'run_name' exists, 'root'/'run_name'_'year'-'month'-'day'-'hour'-'min'-'s' will be used instead.
 root: results/AuMgO_try
-run_name: AuMgO-run                    
+run_name: AuMgO-run-longRange                    
 seed: 123                                                                         # model seed
 dataset_seed: 456                                                                 # data set seed
 append: true                                                                      # set true if a restarted run should append to the previous log file
-default_dtype: float32                                                            # type of float to use, e.g. float32 and float64
+default_dtype: float64                                                            # type of float to use, e.g. float32 and float64
 allow_tf32: false                                                                 # whether to use TensorFloat32 if it is available
 # device:  cuda                                                                   # which device to use. Default: automatically detected cuda or "cpu"
 
@@ -25,10 +25,10 @@ allow_tf32: false                                                               
 # these are the default model builders:
 model_builders:
  - SimpleIrrepsConfig         # update the config with all the irreps for the network if using the simplified `l_max` / `num_features` / `parity` syntax
- - EwaldSummationEnergyModel                # build a full NequIP model
+ - EnergyModel                # build a full NequIP model
  - PerSpeciesRescale          # add per-atom / per-species scaling and shifting to the NequIP model before the total energy sum
-#  - ForceOutput                # wrap the energy model in a module that uses autodifferention to compute the forces
-#  - RescaleEnergyEtc           # wrap the entire model in the appropriate global rescaling of the energy, forces, etc.
+ - ForceOutput                # wrap the energy model in a module that uses autodifferention to compute the forces
+ - RescaleEnergyEtc           # wrap the entire model in the appropriate global rescaling of the energy, forces, etc.
 #   ^ global rescaling blocks must always go last!
 
 r_max: 4.0                                                                        # cutoff radius in length units, here Angstrom, this is an important hyperparamter to scan
@@ -167,8 +167,8 @@ atomic_numbers:
 # validation_dataset_file_name: xxx.xyz                                            # need to be a format accepted by ase.io.read
 
 # logging
-wandb: false                                                                        # we recommend using wandb for logging
-wandb_project: AuMgO-run                                                           # project name used in wandb
+wandb: True                                                                        # we recommend using wandb for logging
+wandb_project: AuMgO-longRange                                                           # project name used in wandb
 wandb_watch: false
 
 # see https://docs.wandb.ai/ref/python/watch
@@ -185,7 +185,7 @@ save_ema_checkpoint_freq: -1                                                    
 
 # training
 n_train:   3500                                                                        # number of training data
-n_val: 1500                                                                           # number of validation data
+n_val: 750                                                                           # number of validation data
 learning_rate: 0.005                                                               # learning rate, we found values between 0.01 and 0.005 to work best - this is often one of the most important hyperparameters to tune
 batch_size: 1                                                                      # batch size, we found it important to keep this small for most applications including forces (1-5); for energy-only training, higher batch sizes work better
 validation_batch_size: 10                                                          # batch size for evaluating the model during validation. This does not affect the training results, but using the highest value possible (<=n_val) without running out of memory will speed up your training.
@@ -223,10 +223,10 @@ early_stopping_upper_bounds:                                                    
 #     - PerAtomMSELoss
 
 loss_coeffs:
-  # forces: 1
-  # total_energy:
-    # - 1
-    # - PerAtomMSELoss
+  forces: 1
+  total_energy:
+    - 1
+    - PerAtomMSELoss
   initial_charges: 
     - 1
     - MSELoss

@@ -6,24 +6,24 @@ from ase.neighborlist import get_distance_matrix
 from nequip.data.AtomicData import neighbor_list_and_relative_vec
 
 #dummy values to test the code
-NSpecies = 2
-Nat = 8
-pos = [[2.7320, 4.3236, 3.5625],
-        [0.7503, 1.2541, 3.7962],
-        [1.0590, 4.2208, 5.0442],
-        [2.9842, 5.0778, 5.0649],
-        [1.3311, 4.7296, 3.2238],
-        [4.5336, 4.5982, 1.7281],
-        [0.0900, 4.9429, 2.9770],
-        [1.3005, 2.9135, 4.8747]]
+# NSpecies = 2
+# Nat = 8
+# pos = [[2.7320, 4.3236, 3.5625],
+#         [0.7503, 1.2541, 3.7962],
+#         [1.0590, 4.2208, 5.0442],
+#         [2.9842, 5.0778, 5.0649],
+#         [1.3311, 4.7296, 3.2238],
+#         [4.5336, 4.5982, 1.7281],
+#         [0.0900, 4.9429, 2.9770],
+#         [1.3005, 2.9135, 4.8747]]
 
-cell = [[[5.0842, 0.0000, 0.0000],
-         [0.0000, 5.0842, 0.0000],
-         [0.0000, 0.0000, 5.0842]]]
+# cell = [[[5.0842, 0.0000, 0.0000],
+#          [0.0000, 5.0842, 0.0000],
+#          [0.0000, 0.0000, 5.0842]]]
 
-X = [0.98, 0.98, 0.98, 0.98, 3.16, 3.16, 3.16, 3.16]
-Q = [1,1,1,1,-1,-1,-1,-1]
-J = [0.1,0.1,0.1,0.1,0.2,0.2,0.2,0.2]
+# X = [0.98, 0.98, 0.98, 0.98, 3.16, 3.16, 3.16, 3.16]
+# Q = [1,1,1,1,-1,-1,-1,-1]
+# J = [0.1,0.1,0.1,0.1,0.2,0.2,0.2,0.2]
 sigma = [2,2,2,2,1,1,1,1]
 
 r_max = 10
@@ -38,7 +38,7 @@ r_max = 10
 def getNeighAtoms():
     pass
 
-def build_gamma(sigma):
+def build_gamma(sigma, Nat):
     gamma = np.zeros((Nat, Nat))
     for i in range(Nat):
         for j in range(Nat):
@@ -64,9 +64,9 @@ def build_r(pos, r_max):
     return r
 
 
-def getEelect(pos, r_max):
+def getEelect(pos, r_max,Nat):
     r = build_r(pos,r_max)
-    gamma = build_gamma(sigma)
+    gamma = build_gamma(sigma,Nat)
     Eelec = 0
     for i in range(Nat):
         add_part = X[i]*Q[i] + 1/2*J[i]*Q[i]**2

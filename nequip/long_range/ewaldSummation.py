@@ -181,7 +181,7 @@ def ewaldSummation(data):
     
     
     Q = data['initial_charges']
-    print('predicted charges',Q)
+    # print('predicted charges',Q)
     pos = data['pos']
     # sigma = sigmadata[data[AtomicDataDict.ATOM_TYPE_KEY]]
     Nat = len(pos)

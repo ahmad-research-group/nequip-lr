@@ -407,7 +407,7 @@ class AtomicData(Data):
             }
         )
         # print("Input charges", add_fields['initial_charges'])
-        # print("Input data keys",add_fields.keys())
+        print("Input data keys",add_fields.keys())
         if atoms.calc is not None:
 
             if isinstance(
