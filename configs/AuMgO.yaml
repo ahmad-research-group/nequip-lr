@@ -8,7 +8,7 @@
 # run_name contains logfiles and saved models
 # process contains processed data sets
 # if 'root'/'run_name' exists, 'root'/'run_name'_'year'-'month'-'day'-'hour'-'min'-'s' will be used instead.
-root: results/AuMgO
+root: results/AuMgO_try
 run_name: AuMgO-run                    
 seed: 123                                                                         # model seed
 dataset_seed: 456                                                                 # data set seed
@@ -25,7 +25,7 @@ allow_tf32: false                                                               
 # these are the default model builders:
 model_builders:
  - SimpleIrrepsConfig         # update the config with all the irreps for the network if using the simplified `l_max` / `num_features` / `parity` syntax
- - ElectronegativityModel                # build a full NequIP model
+ - EwaldSummationEnergyModel                # build a full NequIP model
  - PerSpeciesRescale          # add per-atom / per-species scaling and shifting to the NequIP model before the total energy sum
 #  - ForceOutput                # wrap the energy model in a module that uses autodifferention to compute the forces
 #  - RescaleEnergyEtc           # wrap the entire model in the appropriate global rescaling of the energy, forces, etc.

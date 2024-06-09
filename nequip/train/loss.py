@@ -1,6 +1,6 @@
 import logging
 from typing import Union, List
-
+import torch
 import torch.nn
 from ._loss import find_loss_function
 from ._key import ABBREV
@@ -109,7 +109,7 @@ class Loss:
             )
             contrib[key] = _loss
             loss = loss + self.coeffs[key] * _loss
-
+            
         return loss, contrib
 
 

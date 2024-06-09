@@ -156,4 +156,4 @@ class NequIPCalculator(Calculator):
         if AtomicDataDict.CHARGES_KEY in out:
             charges = out[AtomicDataDict.CHARGES_KEY].detach().cpu().numpy()
             self.results['charges'] = charges
-        
+        print(self.results)

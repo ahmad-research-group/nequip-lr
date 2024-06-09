@@ -15,7 +15,7 @@ def ForceOutput(model: GraphModuleMixin) -> GradientOutput:
     """
     if AtomicDataDict.FORCE_KEY in model.irreps_out:
         raise ValueError("This model already has force outputs.")
-    print("I am in ForceOutput")
+    # print("I am in ForceOutput")
     return GradientOutput(
         func=model,
         of=AtomicDataDict.TOTAL_ENERGY_KEY,

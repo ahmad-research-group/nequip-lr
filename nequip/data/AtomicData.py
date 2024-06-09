@@ -388,7 +388,7 @@ class AtomicData(Data):
         key_mapping = km
 
         # appending the charge keys
-        # include_keys.append("initial_charges")
+        include_keys.append("initial_charges")
         add_fields = {}
 
         # Get info from atoms.arrays; lowest priority. copy first
@@ -407,7 +407,7 @@ class AtomicData(Data):
             }
         )
         # print("Input charges", add_fields['initial_charges'])
-        print("Input data keys",add_fields.keys())
+        # print("Input data keys",add_fields.keys())
         if atoms.calc is not None:
 
             if isinstance(

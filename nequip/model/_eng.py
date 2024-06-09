@@ -212,20 +212,20 @@ def EwaldSummationEnergyModel(
         "conv_to_output_hidden": AtomwiseLinear,
         "output_hidden_to_scalar": (
             AtomwiseLinear,
-            dict(irreps_out="1x0e", out_field=AtomicDataDict.PER_ATOM_CHARGES_KEY),
+            dict(irreps_out="1x0e", out_field=AtomicDataDict.CHARGES_KEY),
         ),
     }
     
 )
 
-    layers["total_charges_sum"] = (
-        AtomwiseReduce,
-        dict(
-            reduce="sum",
-            field=AtomicDataDict.CHARGES_KEY,
-            out_field=AtomicDataDict.TOTAL_CHARGES_KEY
-        ),
-    )
+    # layers["total_charges_sum"] = (
+    #     AtomwiseReduce,
+    #     dict(
+    #         reduce="sum",
+    #         field=AtomicDataDict.CHARGES_KEY,
+    #         out_field=AtomicDataDict.TOTAL_CHARGES_KEY
+    #     ),
+    # )
 
     model = SequentialGraphNetwork.from_parameters(
         shared_params=config,

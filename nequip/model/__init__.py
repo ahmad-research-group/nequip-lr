@@ -1,4 +1,4 @@
-from ._eng import EnergyModel, SimpleIrrepsConfig
+from ._eng import EnergyModel, SimpleIrrepsConfig, EwaldSummationEnergyModel
 from ._grads import ForceOutput, PartialForceOutput, StressForceOutput
 from ._scaling import RescaleEnergyEtc, PerSpeciesRescale
 from ._weight_init import (
@@ -12,6 +12,7 @@ from ._build import model_from_config
 from . import builder_utils
 
 __all__ = [
+    EwaldSummationEnergyModel,
     SimpleIrrepsConfig,
     EnergyModel,
     ForceOutput,
