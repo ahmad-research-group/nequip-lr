@@ -800,7 +800,7 @@ class Trainer:
         # Do any target rescaling
         data = data.to(self.torch_device)
         data = AtomicData.to_AtomicDataDict(data)
-        print('I am in trainer.py')
+        # print('I am in trainer.py')
         data_unscaled = data
         for layer in self.rescale_layers:
             # This means that self.model is RescaleOutputs
@@ -829,7 +829,7 @@ class Trainer:
             loss, loss_contrib = self.loss(pred=out, ref=data_unscaled)
             # see https://pytorch.org/tutorials/recipes/recipes/tuning_guide.html#use-parameter-grad-none-instead-of-model-zero-grad-or-optimizer-zero-grad
             self.optim.zero_grad(set_to_none=True)
-            print("I am before backward")
+            # print("I am before backward")
             loss.backward()
             
             # See https://stackoverflow.com/a/56069467

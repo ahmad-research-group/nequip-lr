@@ -8,7 +8,7 @@
 # run_name contains logfiles and saved models
 # process contains processed data sets
 # if 'root'/'run_name' exists, 'root'/'run_name'_'year'-'month'-'day'-'hour'-'min'-'s' will be used instead.
-root: results/AuMgO_try
+root: results/AuMgO_longRange
 run_name: AuMgO-run-longRange                    
 seed: 123                                                                         # model seed
 dataset_seed: 456                                                                 # data set seed
