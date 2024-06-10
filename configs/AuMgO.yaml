@@ -9,7 +9,7 @@
 # process contains processed data sets
 # if 'root'/'run_name' exists, 'root'/'run_name'_'year'-'month'-'day'-'hour'-'min'-'s' will be used instead.
 root: results/AuMgO_longRange
-run_name: AuMgO-run-longRange_2x                    
+run_name: AuMgO-run-longRange_2x_Q0_A10                    
 seed: 123                                                                         # model seed
 dataset_seed: 456                                                                 # data set seed
 append: true                                                                      # set true if a restarted run should append to the previous log file

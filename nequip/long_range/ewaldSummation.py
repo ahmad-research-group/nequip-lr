@@ -51,6 +51,7 @@ def build_sigma(atoms):
     return torch.tensor(sigma)
 
 def build_A(J, sigma,r,gamma,Nat):
+    #modify A for langrange multiplier
     A = torch.randn(Nat, Nat)
     for i in range(Nat):
         for j in range(Nat):
@@ -60,10 +61,18 @@ def build_A(J, sigma,r,gamma,Nat):
             else:
                 # print('rij',r[i][j])
                 A[i][j] = torch.erfc(r[i][j]/(torch.tensor(1.4142)*gamma[i][j]))/r[i][j]
-    return A
+    
+    rows, cols = A.shape
+    row_ones = torch.ones(1, cols)
+    col_ones = torch.ones(rows + 1, 1)
+    tensor_with_row = torch.cat((A, row_ones), dim=0)
+    tensor_with_row_and_col = torch.cat((tensor_with_row, col_ones), dim=1)
+    tensor_with_row_and_col[-1,-1]
+    return tensor_with_row_and_col
+
 def getHfCharges(X,A):
-    if(len(X)>8):
-        return 0
+    # if(len(X)>8):
+    #     return 0
     # X = data['charges']
     # pos = data['pos']
     # Nat = len(pos)
@@ -72,14 +81,16 @@ def getHfCharges(X,A):
     # r = build_r(pos, r_max)
     # A = build_A(J, sigma, r, gamma, Nat)
     # print(A.shape)
-    A = A.detach().numpy()
-    X = X.detach().numpy()
-    # print(A.shape)
-    # print(X.shape)
+    # A = A.detach().numpy()
+    # X = X.detach().numpy()
+    # print(A)
+    # print(X)
     # X = np.transpose(X)
-    Q = np.matmul(np.linalg.inv(A),-X)
+    #torch.linalg.solve
+    # Q = np.matmul(np.linalg.inv(A),-X) 
+    Q = torch.linalg.solve(A,-X) 
     
-    return torch.tensor(Q, requires_grad=True)
+    return torch.tensor(Q, requires_grad=True) 
 
 def build_gamma(sigma,Nat):
     
@@ -120,7 +131,7 @@ def ewaldSummationPC(Q, pos, cell, Nat,r):
     '''
 
     # eta is the standard deviation of the Gaussian charges, which are placed on the point charges to remove the long-range interactions.
-    eta = torch.tensor(0.005)
+    eta = torch.tensor(0.005) #check fortran code
     def ewaldReal(Nat, eta,Q):
         Ereal = torch.tensor(0.0)
         for i in range(Nat):
@@ -225,7 +236,11 @@ def ewaldSummation(data):
     # J = torch.rand(atom_types, requires_grad = True)
     
     
-    X = data['initial_charges']
+    X1 = data['initial_charges']
+    # print(X1)
+    zero = torch.tensor([[0]])
+    # print(zero.shape)
+    X = torch.cat((X1,zero))
     # print('X',len(X))
     pos = data['pos']
     atoms = data['atom_types'].flatten()
@@ -236,7 +251,7 @@ def ewaldSummation(data):
     
     # print('Q',Q)
     Nat = len(pos)
-    if(Nat>110): 
+    if(Nat>8): 
         return 0
     r = build_r(pos, r_max)
     # sigma = torch.tensor([0.2,0.2,0.2,0.2,0.1,0.1,0.1,0.1]) #gaussian distribution with width sigma(i)
@@ -246,11 +261,13 @@ def ewaldSummation(data):
     J = torch.randn(Nat, requires_grad=True)
     A = build_A(J,sigma,r,gamma,Nat)
     Q = getHfCharges(X, A)
+    print(Q)
     if isinstance(Q, int):
         return 0
+    print('Q sum =',Q.sum())
     elec = ewaldSummationGauss(pos,Q,Nat,r,gamma,cell,sigma)
     
-    if(torch.isnan(elec) or elec<-3): 
+    if(torch.isnan(elec) or elec<-3): # do not constrain
         return 0
     else:
         return elec

@@ -566,7 +566,7 @@ class AtomicData(Data):
                     fields["energies"] = energies[mask].cpu().numpy()
                 if energy is not None:
                     fields["energy"] = energy[batch_idx].cpu().numpy()
-                if force is not None:
+                if forces is not None:
                     fields["forces"] = forces[mask].cpu().numpy()
                 if initial_charges is not None:
                     fields["initial_charges"] = initial_charges[mask].cpu().numpy()

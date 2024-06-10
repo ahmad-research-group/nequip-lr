@@ -160,7 +160,7 @@ chemical_symbols:
 # validation_dataset_file_name: xxx.xyz                                            # need to be a format accepted by ase.io.read
 
 # logging
-wandb: true                                                                        # we recommend using wandb for logging
+wandb: false                                                                        # we recommend using wandb for logging
 wandb_project: LiCL-example                                                     # project name used in wandb
 wandb_watch: false
 
