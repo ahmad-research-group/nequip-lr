@@ -48,6 +48,7 @@ def build_sigma(atoms):
     atoms_type = [0.6, 1.41, 1.21, 1.36]
     for atom in atoms:
         sigma.append(atoms_type[atom])
+    # print(sigma)
     return torch.tensor(sigma)
 
 def build_A(J, sigma,r,gamma,Nat):
@@ -61,13 +62,17 @@ def build_A(J, sigma,r,gamma,Nat):
             else:
                 # print('rij',r[i][j])
                 A[i][j] = torch.erfc(r[i][j]/(torch.tensor(1.4142)*gamma[i][j]))/r[i][j]
-    
+            if torch.isnan(A[i][j]) or torch.isinf(A[i][j]):
+                print('i, j = ', i, j)
+                print(r[i][j])
+    # print("A",A.flatten())
     rows, cols = A.shape
     row_ones = torch.ones(1, cols)
     col_ones = torch.ones(rows + 1, 1)
     tensor_with_row = torch.cat((A, row_ones), dim=0)
     tensor_with_row_and_col = torch.cat((tensor_with_row, col_ones), dim=1)
-    tensor_with_row_and_col[-1,-1]
+    tensor_with_row_and_col[-1,-1] = 0
+    # print("A after changes",tensor_with_row_and_col.flatten())
     return tensor_with_row_and_col
 
 def getHfCharges(X,A):
@@ -81,15 +86,16 @@ def getHfCharges(X,A):
     # r = build_r(pos, r_max)
     # A = build_A(J, sigma, r, gamma, Nat)
     # print(A.shape)
-    # A = A.detach().numpy()
-    # X = X.detach().numpy()
+    A = A.detach().numpy()
+    X = X.detach().numpy()
     # print(A)
     # print(X)
     # X = np.transpose(X)
     #torch.linalg.solve
-    # Q = np.matmul(np.linalg.inv(A),-X) 
-    Q = torch.linalg.solve(A,-X) 
-    
+    Q = np.matmul(np.linalg.inv(A),-X) 
+    # Q = torch.linalg.solve(A,-X) 
+    if(np.isnan(Q.any())):
+        return 0
     return torch.tensor(Q, requires_grad=True) 
 
 def build_gamma(sigma,Nat):
@@ -225,13 +231,15 @@ def ewaldSummationGauss(pos, charges,Nat,r,gamma,cell,sigma):
     return energyGaussian
 
 def ewaldSummation(data):
+    # if(len(data[pos]))>110:
+    #     return 0
     '''
     Args:
     output data[]
 
     '''
     # atom_types = data['atom_types'].shape
-    r_max = 10
+    r_max = 100
     # X = torch.rand(atom_types, requires_grad = True)
     # J = torch.rand(atom_types, requires_grad = True)
     
@@ -261,12 +269,12 @@ def ewaldSummation(data):
     J = torch.randn(Nat, requires_grad=True)
     A = build_A(J,sigma,r,gamma,Nat)
     Q = getHfCharges(X, A)
-    print(Q)
+    # print(Q)
     if isinstance(Q, int):
         return 0
     print('Q sum =',Q.sum())
     elec = ewaldSummationGauss(pos,Q,Nat,r,gamma,cell,sigma)
-    print('electrostatic part',elec)
+    # print('electrostatic part',elec)
 
     if(torch.isnan(elec)): # do not constrain
         return 0

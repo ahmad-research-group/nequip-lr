@@ -389,6 +389,7 @@ class AtomicData(Data):
 
         # appending the charge keys
         include_keys.append("initial_charges")
+        # print('input keys',include_keys)
         add_fields = {}
 
         # Get info from atoms.arrays; lowest priority. copy first
@@ -453,7 +454,7 @@ class AtomicData(Data):
             **kwargs,
             **add_fields,
         )
-
+    
     def to_ase(
         self,
         type_mapper=None,

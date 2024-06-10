@@ -87,7 +87,7 @@ use_sc: true                                                                    
 
 # for extxyz file
 dataset: ase
-dataset_file_name: AuMgO.extxyz
+dataset_file_name: gold.extxyz
 ase_args:
   format: extxyz
 include_keys:
