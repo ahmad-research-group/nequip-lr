@@ -35,6 +35,20 @@ Eself = - sum(i=1 to Nat) {Qi**2}/ sqrt(2*pi)/ eta
 # }
 
 k_cutoff = 5.0
+def build_sigma(atoms):
+    sigma = []
+    # atoms_type = {
+    #     '0': 0.2,
+    #     '1': 0.1,
+    #     '2': 0.3,
+    #     '3': 0.5
+    # }
+
+    # O, Mg, Al, Au -> sorted in alphabetic order
+    atoms_type = [0.2, 0.1, 0.3, 0.5]
+    for atom in atoms:
+        sigma.append(atoms_type[atom])
+    return torch.tensor(sigma)
 
 def build_A(J, sigma,r,gamma,Nat):
     A = torch.randn(Nat, Nat)
@@ -206,7 +220,7 @@ def ewaldSummation(data):
 
     '''
     # atom_types = data['atom_types'].shape
-    r_max = 7
+    r_max = 10
     # X = torch.rand(atom_types, requires_grad = True)
     # J = torch.rand(atom_types, requires_grad = True)
     
@@ -214,6 +228,7 @@ def ewaldSummation(data):
     X = data['initial_charges']
     # print('X',len(X))
     pos = data['pos']
+    atoms = data['atom_types'].flatten()
     # sigma = sigmadata[data[AtomicDataDict.ATOM_TYPE_KEY]]
     # if (len(X)!=0)
     
@@ -221,10 +236,11 @@ def ewaldSummation(data):
     
     # print('Q',Q)
     Nat = len(pos)
-    if(Nat>8): 
+    if(Nat>110): 
         return 0
     r = build_r(pos, r_max)
-    sigma = torch.tensor([0.2,0.2,0.2,0.2,0.1,0.1,0.1,0.1]) #gaussian distribution with width sigma(i)
+    # sigma = torch.tensor([0.2,0.2,0.2,0.2,0.1,0.1,0.1,0.1]) #gaussian distribution with width sigma(i)
+    sigma = build_sigma(atoms)
     gamma = build_gamma(sigma,Nat)
     cell = data['cell'][0]
     J = torch.randn(Nat, requires_grad=True)
