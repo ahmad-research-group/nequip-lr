@@ -45,7 +45,7 @@ def build_sigma(atoms):
     # }
 
     # O, Mg, Al, Au -> sorted in alphabetic order
-    atoms_type = [0.2, 0.1, 0.3, 0.5]
+    atoms_type = [0.6, 1.41, 1.21, 1.36]
     for atom in atoms:
         sigma.append(atoms_type[atom])
     return torch.tensor(sigma)
@@ -176,9 +176,9 @@ def ewaldSummationPC(Q, pos, cell, Nat,r):
         for k_val in k_points:
             k_mag_sq = torch.dot(k_val, k_val)
             if torch.abs(k_mag_sq)>1e-6:    
-                Sk = 0
+                Sk = torch.tensor(0)
                 for i in range(Nat):
-                    Sk = Sk + Q[i] * torch.exp(1j * torch.dot(k_val.float(), pos[i,:]))
+                    Sk = Sk + Q[i] * torch.exp(1j * torch.dot(k_val.float(), pos[i,:].float()))
                 Ereceip += torch.exp(-eta**2 * k_mag_sq / 2) / k_mag_sq * torch.abs(Sk)**2
                 # print("k",k_mag_sq * torch.abs(Sk)**2)
         V = torch.linalg.det(torch.tensor(cell))
@@ -251,8 +251,8 @@ def ewaldSummation(data):
     
     # print('Q',Q)
     Nat = len(pos)
-    if(Nat>8): 
-        return 0
+    # if(Nat>8): 
+    #     return 0
     r = build_r(pos, r_max)
     # sigma = torch.tensor([0.2,0.2,0.2,0.2,0.1,0.1,0.1,0.1]) #gaussian distribution with width sigma(i)
     sigma = build_sigma(atoms)
@@ -266,8 +266,9 @@ def ewaldSummation(data):
         return 0
     print('Q sum =',Q.sum())
     elec = ewaldSummationGauss(pos,Q,Nat,r,gamma,cell,sigma)
-    
-    if(torch.isnan(elec) or elec<-3): # do not constrain
+    print('electrostatic part',elec)
+
+    if(torch.isnan(elec)): # do not constrain
         return 0
     else:
         return elec
