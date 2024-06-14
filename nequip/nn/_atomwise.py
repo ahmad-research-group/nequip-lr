@@ -115,7 +115,7 @@ class AtomwiseReduce(GraphModuleMixin, torch.nn.Module):
         #     print(data['r_max'])
         
         # Eshort = data['total_energy']
-        print("without ewald", data['total_energy'])
+        # print("without ewald", data['total_energy'])
         # print("diff", Eelect-data["total_energy"])
         data['total_energy'] = data['total_energy'] + Eelect
         # print("with ewald", data['total_energy'])

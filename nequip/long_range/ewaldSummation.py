@@ -84,8 +84,8 @@ def build_A(J, sigma,r,gamma,Nat):
     return A
 
 def getHfCharges(X,A):
-    # if(len(X)>8):
-    #     return 0
+    if(len(X)>8):
+        return 0
     # X = data['charges']
     # pos = data['pos']
     # Nat = len(pos)
@@ -243,15 +243,15 @@ def ewaldSummationGauss(pos, charges,Nat,r,gamma,cell,sigma):
 
 def ewaldSummation(data, J):
     # print(J)
-    # if(len(data['pos']))>110:
-    #     return 0
+    if(len(data['pos']))>8:
+        return 0
     '''
     Args:
     output data[]
 
     '''
     # atom_types = data['atom_types'].shape
-    r_max = 10
+    r_max = 7
     # X = torch.rand(atom_types, requires_grad = True)
     # J = torch.rand(8, requires_grad = True)
     
@@ -275,7 +275,7 @@ def ewaldSummation(data, J):
     r = build_r(pos, r_max)
     sigma = torch.tensor([0.2,0.2,0.2,0.2,0.1,0.1,0.1,0.1]) #gaussian distribution with width sigma(i)
     # J = torch.tensor([0.2,0.2,0.2,0.2,0.1,0.1,0.1,0.1]) #gaussian distribution with width sigma(i)
-    print(J)
+    # print(J)
     # sigma = build_sigma(atoms)
     # sigma = torch.tensor(np.full(110, 0.1))
     gamma = build_gamma(sigma,Nat)
