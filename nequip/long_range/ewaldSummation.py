@@ -62,18 +62,19 @@ def build_A(J, sigma,r,gamma,Nat):
             else:
                 # print('rij',r[i][j])
                 A[i][j] = torch.erfc(r[i][j]/(torch.tensor(1.4142)*gamma[i][j]))/r[i][j]
-            if torch.isnan(A[i][j]) or torch.isinf(A[i][j]):
-                print('i, j = ', i, j)
-                print(r[i][j])
+            # if torch.isnan(A[i][j]) or torch.isinf(A[i][j]):
+            #     print('i, j = ', i, j)
+            #     print(r[i][j])
     # print("A",A.flatten())
-    rows, cols = A.shape
-    row_ones = torch.ones(1, cols)
-    col_ones = torch.ones(rows + 1, 1)
-    tensor_with_row = torch.cat((A, row_ones), dim=0)
-    tensor_with_row_and_col = torch.cat((tensor_with_row, col_ones), dim=1)
-    tensor_with_row_and_col[-1,-1] = 0
+    # rows, cols = A.shape
+    # row_ones = torch.ones(1, cols)
+    # col_ones = torch.ones(rows + 1, 1)
+    # tensor_with_row = torch.cat((A, row_ones), dim=0)
+    # tensor_with_row_and_col = torch.cat((tensor_with_row, col_ones), dim=1)
+    # tensor_with_row_and_col[-1,-1] = 0
     # print("A after changes",tensor_with_row_and_col.flatten())
-    return tensor_with_row_and_col
+    # return tensor_with_row_and_col
+    return A
 
 def getHfCharges(X,A):
     # if(len(X)>8):
@@ -86,16 +87,16 @@ def getHfCharges(X,A):
     # r = build_r(pos, r_max)
     # A = build_A(J, sigma, r, gamma, Nat)
     # print(A.shape)
-    A = A.detach().numpy()
-    X = X.detach().numpy()
+    # A = A.detach().numpy()
+    # X = X.detach().numpy()
     # print(A)
     # print(X)
     # X = np.transpose(X)
     #torch.linalg.solve
     Q = np.matmul(np.linalg.inv(A),-X) 
     # Q = torch.linalg.solve(A,-X) 
-    if(np.isnan(Q.any())):
-        return 0
+    # if(np.isnan(Q.any())):
+    #     return 0
     return torch.tensor(Q, requires_grad=True) 
 
 def build_gamma(sigma,Nat):
@@ -111,7 +112,7 @@ def build_gamma(sigma,Nat):
 #interatomic distances matrix
 def build_r(pos, r_max):
     # Ensure pos is a numpy array
-    pos = pos.detach().numpy()
+    pos = pos.clone().detach().numpy()
 
     # Calculate interatomic distances
     n_atoms = len(pos)
@@ -231,7 +232,7 @@ def ewaldSummationGauss(pos, charges,Nat,r,gamma,cell,sigma):
     return energyGaussian
 
 def ewaldSummation(data):
-    # if(len(data[pos]))>110:
+    # if(len(data['pos']))>110:
     #     return 0
     '''
     Args:
@@ -239,17 +240,17 @@ def ewaldSummation(data):
 
     '''
     # atom_types = data['atom_types'].shape
-    r_max = 100
+    r_max = 10
     # X = torch.rand(atom_types, requires_grad = True)
     # J = torch.rand(atom_types, requires_grad = True)
     
     
-    X1 = data['initial_charges']
+    X = data['initial_charges'].clone().detach().numpy()
     # print(X1)
-    zero = torch.tensor([[0]])
+    # zero = torch.tensor([[1e-6]])
     # print(zero.shape)
-    X = torch.cat((X1,zero))
-    # print('X',len(X))
+    # X = torch.cat((X1,zero))
+    
     pos = data['pos']
     atoms = data['atom_types'].flatten()
     # sigma = sigmadata[data[AtomicDataDict.ATOM_TYPE_KEY]]
@@ -259,27 +260,35 @@ def ewaldSummation(data):
     
     # print('Q',Q)
     Nat = len(pos)
-    # if(Nat>8): 
+    # if(Nat>110): 
     #     return 0
     r = build_r(pos, r_max)
     # sigma = torch.tensor([0.2,0.2,0.2,0.2,0.1,0.1,0.1,0.1]) #gaussian distribution with width sigma(i)
     sigma = build_sigma(atoms)
     gamma = build_gamma(sigma,Nat)
     cell = data['cell'][0]
-    J = torch.randn(Nat, requires_grad=True)
+    J = torch.randn(Nat,requires_grad=True)
+    # J = J
     A = build_A(J,sigma,r,gamma,Nat)
+    # X = data['initial_charges'].detach().numpy()
+    A = A.clone().detach().numpy()
+    # A = data['initial_charges'].detach().numpy()
+    # print('X',len(X))
+    # print('A',len(A))
     Q = getHfCharges(X, A)
+    # Q = Q[:Nat]
     # print(Q)
-    if isinstance(Q, int):
-        return 0
-    print('Q sum =',Q.sum())
+    # print(Nat)
+    # if isinstance(Q, int):
+    #     return 0
+    # print('Q sum =',Q.sum())
     elec = ewaldSummationGauss(pos,Q,Nat,r,gamma,cell,sigma)
     # print('electrostatic part',elec)
 
-    if(torch.isnan(elec)): # do not constrain
-        return 0
-    else:
-        return elec
-
+    # if(torch.isnan(elec)): # do not constrain
+    #     return 0
+    # else:
+    #     return elec
+    return elec
 # ans = ewaldSummation(data)
 # print(ans)

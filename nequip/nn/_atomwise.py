@@ -84,6 +84,7 @@ class AtomwiseReduce(GraphModuleMixin, torch.nn.Module):
             if self.field in irreps_in
             else {},
         )
+        # J = torch.randn(len(AtomicDataDict.with_batch(data)['pos']), requires_grad=True)
 
     def forward(self, data: AtomicDataDict.Type) -> AtomicDataDict.Type:
         data = AtomicDataDict.with_batch(data)
