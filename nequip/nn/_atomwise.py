@@ -84,7 +84,8 @@ class AtomwiseReduce(GraphModuleMixin, torch.nn.Module):
             if self.field in irreps_in
             else {},
         )
-        # J = torch.randn(len(AtomicDataDict.with_batch(data)['pos']), requires_grad=True)
+        self.J = torch.randn(8, requires_grad=True)
+        #try for LiCl only
 
     def forward(self, data: AtomicDataDict.Type) -> AtomicDataDict.Type:
         data = AtomicDataDict.with_batch(data)
@@ -101,10 +102,12 @@ class AtomwiseReduce(GraphModuleMixin, torch.nn.Module):
         and add it to data['total_energy'][i]. 
         
         '''
+        # J = torch.randn(8, requires_grad=True)
 
         # positions = data['pos']
         # r_max = 5
-        Eelect = ewaldSummation(data)
+        # J = self.J
+        Eelect = ewaldSummation(data, self.J)
         # if(Eelect<-5):
         #     print(Eelect)
         #     print(data['initial_charges'])
@@ -112,7 +115,7 @@ class AtomwiseReduce(GraphModuleMixin, torch.nn.Module):
         #     print(data['r_max'])
         
         # Eshort = data['total_energy']
-        # print("without ewald", data['total_energy'])
+        print("without ewald", data['total_energy'])
         # print("diff", Eelect-data["total_energy"])
         data['total_energy'] = data['total_energy'] + Eelect
         # print("with ewald", data['total_energy'])

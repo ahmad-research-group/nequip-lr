@@ -160,9 +160,9 @@ chemical_symbols:
 # validation_dataset_file_name: xxx.xyz                                            # need to be a format accepted by ase.io.read
 
 # logging
-wandb: false                                                                        # we recommend using wandb for logging
-wandb_project: LiCL-example                                                     # project name used in wandb
-wandb_watch: false
+# wandb: true                                                                        # we recommend using wandb for logging
+# wandb_project: LiCL-example                                                     # project name used in wandb
+# wandb_watch: false
 
 # see https://docs.wandb.ai/ref/python/watch
 # wandb_watch_kwargs:
@@ -181,7 +181,7 @@ n_train: 16                                                                     
 n_val: 5                                                                       # number of validation data
 learning_rate: 0.005                                                               # learning rate, we found values between 0.01 and 0.005 to work best - this is often one of the most important hyperparameters to tune
 batch_size: 1                                                                      # batch size, we found it important to keep this small for most applications including forces (1-5); for energy-only training, higher batch sizes work better
-validation_batch_size: 1                                                          # batch size for evaluating the model during validation. This does not affect the training results, but using the highest value possible (<=n_val) without running out of memory will speed up your training.
+validation_batch_size: 1                                                         # batch size for evaluating the model during validation. This does not affect the training results, but using the highest value possible (<=n_val) without running out of memory will speed up your training.
 max_epochs: 100000                                                                 # stop training after _ number of epochs, we set a very large number here, it won't take this long in practice and we will use early stopping instead
 train_val_split: random                                                            # can be random or sequential. if sequential, first n_train elements are training, next n_val are val, else random, usually random is the right choice
 shuffle: true                                                                      # If true, the data loader will shuffle the data, usually a good idea
@@ -216,12 +216,12 @@ early_stopping_upper_bounds:                                                    
 #     - PerAtomMSELoss
 
 loss_coeffs:
-  forces: 1
+  forces: 2
   total_energy:
     - 1
     - PerAtomMSELoss
   initial_charges: 
-    - 2
+    - 1
     - MSELoss
 
 # note that the ratio between force and energy loss matters for the training process. One may consider using 1:1 with the PerAtomMSELoss. If the energy loss still significantly dominate the loss function at the initial epochs, tune the energy loss weight lower helps the training a lot.

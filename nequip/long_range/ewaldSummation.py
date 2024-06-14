@@ -3,6 +3,7 @@ import math
 from nequip.data import AtomicDataDict
 import numpy as np
 from nequip.long_range.HirshFeld import *
+
 # sigmadata = torch.tensor([1.,2.,3.])
 '''
 Eelec = Ereal + Ereceip + Eself
@@ -16,6 +17,9 @@ S(k) = sum(i=1 to Nat) {Qi exp(i*k . ri)}
 Eself = - sum(i=1 to Nat) {Qi**2}/ sqrt(2*pi)/ eta
 
 # '''
+
+# J = torch.randn(8,requires_grad=True)
+# J = torch.randn(110,requires_grad=True)
 
 # data = {
 #      'pos': torch.tensor([[2.7320, 4.3236, 3.5625],
@@ -50,6 +54,9 @@ def build_sigma(atoms):
         sigma.append(atoms_type[atom])
     # print(sigma)
     return torch.tensor(sigma)
+
+# sigma = torch.tensor(np.full(110, 0.1))
+# sigma = torch.tensor(np.full(4, 0.1),np.full(4, 0.2))
 
 def build_A(J, sigma,r,gamma,Nat):
     #modify A for langrange multiplier
@@ -93,11 +100,12 @@ def getHfCharges(X,A):
     # print(X)
     # X = np.transpose(X)
     #torch.linalg.solve
-    Q = np.matmul(np.linalg.inv(A),-X) 
-    # Q = torch.linalg.solve(A,-X) 
+    # Q = np.matmul(np.linalg.inv(A),-X) 
+    Q = torch.linalg.solve(A,-X) 
     # if(np.isnan(Q.any())):
     #     return 0
-    return torch.tensor(Q, requires_grad=True) 
+    # return torch.tensor(Q, requires_grad=True) 
+    return Q
 
 def build_gamma(sigma,Nat):
     
@@ -105,26 +113,28 @@ def build_gamma(sigma,Nat):
     for i in range(Nat):
         for j in range(Nat):
             gamma[i][j] = torch.sqrt(sigma[i]**2 + sigma[j]**2)
-            
+            # print(i,j)
     return gamma       
 
 
 #interatomic distances matrix
 def build_r(pos, r_max):
     # Ensure pos is a numpy array
-    pos = pos.clone().detach().numpy()
+    # pos = pos.clone().detach().numpy()
+    # pos = pos.detach().numpy()
+
 
     # Calculate interatomic distances
     n_atoms = len(pos)
     r = torch.zeros((n_atoms, n_atoms))
     for i in range(n_atoms):
         for j in range(i+1, n_atoms):
-            distance = torch.tensor(np.linalg.norm(pos[i] - pos[j]))
+            distance = torch.tensor(torch.linalg.norm(pos[i] - pos[j]))
             if distance <= r_max:
                 r[i][j] = distance
                 r[j][i] = distance
 
-    return torch.tensor(r)
+    return r
 
 #point charges
 def ewaldSummationPC(Q, pos, cell, Nat,r):
@@ -231,7 +241,8 @@ def ewaldSummationGauss(pos, charges,Nat,r,gamma,cell,sigma):
     energyGaussian = energyPC - subtraction_part
     return energyGaussian
 
-def ewaldSummation(data):
+def ewaldSummation(data, J):
+    # print(J)
     # if(len(data['pos']))>110:
     #     return 0
     '''
@@ -242,17 +253,16 @@ def ewaldSummation(data):
     # atom_types = data['atom_types'].shape
     r_max = 10
     # X = torch.rand(atom_types, requires_grad = True)
-    # J = torch.rand(atom_types, requires_grad = True)
+    # J = torch.rand(8, requires_grad = True)
     
-    
-    X = data['initial_charges'].clone().detach().numpy()
+    X = data['initial_charges']
     # print(X1)
     # zero = torch.tensor([[1e-6]])
     # print(zero.shape)
     # X = torch.cat((X1,zero))
     
     pos = data['pos']
-    atoms = data['atom_types'].flatten()
+    # atoms = data['atom_types'].flatten()
     # sigma = sigmadata[data[AtomicDataDict.ATOM_TYPE_KEY]]
     # if (len(X)!=0)
     
@@ -263,15 +273,18 @@ def ewaldSummation(data):
     # if(Nat>110): 
     #     return 0
     r = build_r(pos, r_max)
-    # sigma = torch.tensor([0.2,0.2,0.2,0.2,0.1,0.1,0.1,0.1]) #gaussian distribution with width sigma(i)
-    sigma = build_sigma(atoms)
+    sigma = torch.tensor([0.2,0.2,0.2,0.2,0.1,0.1,0.1,0.1]) #gaussian distribution with width sigma(i)
+    # J = torch.tensor([0.2,0.2,0.2,0.2,0.1,0.1,0.1,0.1]) #gaussian distribution with width sigma(i)
+    print(J)
+    # sigma = build_sigma(atoms)
+    # sigma = torch.tensor(np.full(110, 0.1))
     gamma = build_gamma(sigma,Nat)
     cell = data['cell'][0]
-    J = torch.randn(Nat,requires_grad=True)
+    
     # J = J
     A = build_A(J,sigma,r,gamma,Nat)
     # X = data['initial_charges'].detach().numpy()
-    A = A.clone().detach().numpy()
+    # A = A.clone().detach().numpy()
     # A = data['initial_charges'].detach().numpy()
     # print('X',len(X))
     # print('A',len(A))
