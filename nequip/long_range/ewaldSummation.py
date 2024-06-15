@@ -84,8 +84,8 @@ def build_A(J, sigma,r,gamma,Nat):
     return A
 
 def getHfCharges(X,A):
-    if(len(X)>8):
-        return 0
+    # if(len(X)>110):
+    #     return 0
     # X = data['charges']
     # pos = data['pos']
     # Nat = len(pos)
@@ -241,17 +241,26 @@ def ewaldSummationGauss(pos, charges,Nat,r,gamma,cell,sigma):
     energyGaussian = energyPC - subtraction_part
     return energyGaussian
 
+atoms = torch.tensor([1, 0, 0, 1, 1, 0, 0, 1, 2, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1,
+        1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1,
+        1, 0, 0, 1, 1, 0, 0, 1, 2, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1,
+        1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1,
+        1, 0, 0, 1, 1, 0, 0, 1, 2, 0, 0, 1, 3, 3])
+sigma = build_sigma(atoms)
+gamma = build_gamma(sigma,110)
+
 def ewaldSummation(data, J):
-    # print(J)
-    if(len(data['pos']))>8:
-        return 0
+    # print(len(data['pos']))
+    # if(len(data['pos']))>8:
+    #     return 0
+    
     '''
     Args:
     output data[]
 
     '''
     # atom_types = data['atom_types'].shape
-    r_max = 7
+    r_max = 10
     # X = torch.rand(atom_types, requires_grad = True)
     # J = torch.rand(8, requires_grad = True)
     
@@ -263,6 +272,7 @@ def ewaldSummation(data, J):
     
     pos = data['pos']
     # atoms = data['atom_types'].flatten()
+    # print(atoms)
     # sigma = sigmadata[data[AtomicDataDict.ATOM_TYPE_KEY]]
     # if (len(X)!=0)
     
@@ -273,12 +283,12 @@ def ewaldSummation(data, J):
     # if(Nat>110): 
     #     return 0
     r = build_r(pos, r_max)
-    sigma = torch.tensor([0.2,0.2,0.2,0.2,0.1,0.1,0.1,0.1]) #gaussian distribution with width sigma(i)
+    # sigma = torch.tensor([0.2,0.2,0.2,0.2,0.1,0.1,0.1,0.1]) #gaussian distribution with width sigma(i)
     # J = torch.tensor([0.2,0.2,0.2,0.2,0.1,0.1,0.1,0.1]) #gaussian distribution with width sigma(i)
     # print(J)
-    # sigma = build_sigma(atoms)
+    
     # sigma = torch.tensor(np.full(110, 0.1))
-    gamma = build_gamma(sigma,Nat)
+    # gamma = build_gamma(sigma,8)
     cell = data['cell'][0]
     
     # J = J

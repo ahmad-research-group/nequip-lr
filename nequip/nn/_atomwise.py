@@ -84,7 +84,7 @@ class AtomwiseReduce(GraphModuleMixin, torch.nn.Module):
             if self.field in irreps_in
             else {},
         )
-        self.J = torch.randn(8, requires_grad=True)
+        self.J = torch.randn(110, requires_grad=True)
         #try for LiCl only
 
     def forward(self, data: AtomicDataDict.Type) -> AtomicDataDict.Type:
