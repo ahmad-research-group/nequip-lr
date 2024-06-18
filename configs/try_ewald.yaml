@@ -129,9 +129,9 @@ key_mapping:
 chemical_symbols:
   - Li
   - Cl
-# atomic_numbers:
-#  - 3
-#  - 17
+atomic_numbers:
+ - 3
+ - 17
 
 # Alternatively, you may explicitly specify which chemical species in the input will map to NequIP atom type 0, which to atom type 1, and so on.
 # Other than providing an explicit order for the NequIP atom types, this option behaves the same as `chemical_symbols`

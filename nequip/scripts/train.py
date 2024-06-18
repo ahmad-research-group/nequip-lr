@@ -194,6 +194,7 @@ def fresh_start(config):
 
     # Store any updated config information in the trainer
     trainer.update_kwargs(config)
+    # print(config)
 
     return trainer
 

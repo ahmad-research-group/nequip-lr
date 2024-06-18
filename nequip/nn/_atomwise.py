@@ -107,7 +107,7 @@ class AtomwiseReduce(GraphModuleMixin, torch.nn.Module):
         # positions = data['pos']
         # r_max = 5
         # J = self.J
-        Eelect = ewaldSummation(data, self.J)
+        # Eelect = ewaldSummation(data, self.J)
         # if(Eelect<-5):
         #     print(Eelect)
         #     print(data['initial_charges'])
@@ -117,7 +117,7 @@ class AtomwiseReduce(GraphModuleMixin, torch.nn.Module):
         # Eshort = data['total_energy']
         # print("without ewald", data['total_energy'])
         # print("diff", Eelect-data["total_energy"])
-        data['total_energy'] = data['total_energy'] + Eelect
+        # data['total_energy'] = data['total_energy'] + Eelect
         # print("with ewald", data['total_energy'])
         
         # print('atom_types',data['atom_types'].flatten())

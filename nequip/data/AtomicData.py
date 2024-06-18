@@ -408,7 +408,7 @@ class AtomicData(Data):
             }
         )
         # print("Input charges", add_fields['initial_charges'])
-        # print("Input data keys",add_fields.keys())
+        # print("Input data keys",add_fields)
         if atoms.calc is not None:
 
             if isinstance(
@@ -445,7 +445,8 @@ class AtomicData(Data):
                     add_fields[key] = voigt_6_to_full_3x3_stress(add_fields[key])
                 else:
                     raise RuntimeError(f"bad shape for {key}")
-        # print(add_fields.keys())
+                
+        # print(add_fields['initial_charges'])
         return cls.from_points(
             pos=atoms.positions,
             r_max=r_max,
@@ -569,8 +570,8 @@ class AtomicData(Data):
                     fields["energy"] = energy[batch_idx].cpu().numpy()
                 if forces is not None:
                     fields["forces"] = forces[mask].cpu().numpy()
-                if initial_charges is not None:
-                    fields["initial_charges"] = initial_charges[mask].cpu().numpy()
+                # if initial_charges is not None:
+                #     fields["initial_charges"] = initial_charges[mask].cpu().numpy()
                 if AtomicDataDict.STRESS_KEY in self:
                     fields["stress"] = full_3x3_to_voigt_6_stress(
                         self["stress"].view(-1, 3, 3)[batch_idx].cpu().numpy()
