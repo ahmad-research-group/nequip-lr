@@ -10,8 +10,10 @@ from nequip.nn import (
     AtomwiseLinear,
     AtomwiseReduce,
     ConvNetLayer,
+    GraphModuleMixin
     
 )
+from nequip.model._grads import ForceOutput
 from nequip.nn.embedding import (
     OneHotAtomEncoding,
     RadialBasisEdgeEncoding,
@@ -19,7 +21,8 @@ from nequip.nn.embedding import (
 )
 from nequip.nn._ewald import Ewald, EwaldQeq
 from nequip.nn._electrostatic import SumEnergies, ChargeSkipConnection
-
+from nequip.nn._charge_embedding import TotalChargeEmbedding
+from nequip.nn._attention import AttentionBlock
 from . import builder_utils
 from nequip.data._keys import CHARGES_KEY, ELECTROSTATIC_ENERGY_KEY, TOTAL_CHARGE_KEY
 # register_fields(node_fields=[AtomicDataDict.CHARGES_KEY])
@@ -113,12 +116,14 @@ def EnergyModel(config, initialize: bool, dataset: Optional[AtomicDataset] = Non
         "chemical_embedding": AtomwiseLinear,
     }
 
-    # layers["total_charge_embedding"] = TotalChargeEmbedding
+    layers["total_charge_embedding"] = TotalChargeEmbedding
 
     # add convnet layers
     # insertion preserves order
     for layer_i in range(num_layers):
         layers[f"layer{layer_i}_convnet"] = ConvNetLayer
+
+    layers[f"layer{layer_i}_attention"] = AttentionBlock
 
     # .update also maintains insertion order
     # layers.update(
@@ -145,16 +150,16 @@ def EnergyModel(config, initialize: bool, dataset: Optional[AtomicDataset] = Non
             ),
         )
     
-    layers["total_energy_with_ele"] = (
-                Ewald,
-                dict(scale=energy_scale),
-            )
+    # layers["total_energy_with_ele"] = (
+    #             Ewald,
+    #             dict(scale=energy_scale),
+    #         )
     
 
-    # layers["total_energy_with_qeq"] = (
-    #             EwaldQeq,
-    #             # dict(scale=energy_scale),
-    #         )
+    layers["total_energy_with_qeq"] = (
+                EwaldQeq,
+                dict(scale=energy_scale),
+            )
 
     layers["add_charges_to_output_hidden"] = ChargeSkipConnection
 
@@ -228,6 +233,9 @@ def EnergyModel(config, initialize: bool, dataset: Optional[AtomicDataset] = Non
     #print(config)
     # print(model)
     return model
+
+
+    # return ForceOutput(energy_model=energy_charge_model)
 
 # def EwaldSummationEnergyModel(
 #     config, initialize: bool, dataset: Optional[AtomicDataset] = None

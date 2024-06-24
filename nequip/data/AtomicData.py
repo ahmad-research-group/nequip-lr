@@ -429,7 +429,8 @@ class AtomicData(Data):
                 )
 
         add_fields[AtomicDataDict.ATOMIC_NUMBERS_KEY] = atoms.get_atomic_numbers()
-
+        add_fields[AtomicDataDict.TOTAL_CHARGE_KEY] = [float(0)]
+        
         # cell and pbc in kwargs can override the ones stored in atoms
         cell = kwargs.pop("cell", atoms.get_cell())
         pbc = kwargs.pop("pbc", atoms.pbc)

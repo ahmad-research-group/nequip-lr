@@ -33,10 +33,15 @@ class TotalChargeEmbedding(GraphModuleMixin, torch.nn.Module):
         )
 
     def forward(self, data: AtomicDataDict.Type) -> AtomicDataDict.Type:
+
+        # print(data.keys())
         total_charge_embedding = self.linear(
             data[self.field]
         )  # (batch_size, chemical_embedding_irreps_out)
+        print(total_charge_embedding[data[AtomicDataDict.BATCH_KEY],:])
+        # print(data[AtomicDataDict.BATCH_KEY])
         data[self.out_field] = (
             data[self.out_field] + total_charge_embedding[data[AtomicDataDict.BATCH_KEY], :]
         )
+       
         return data

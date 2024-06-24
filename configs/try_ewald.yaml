@@ -15,7 +15,7 @@ dataset_seed: 456                                                               
 append: true                                                                      # set true if a restarted run should append to the previous log file
 default_dtype: float32                                                            # type of float to use, e.g. float32 and float64
 allow_tf32: false                                                                 # whether to use TensorFloat32 if it is available
-# device:  cuda                                                                   # which device to use. Default: automatically detected cuda or "cpu"
+device:  cpu                                                                   # which device to use. Default: automatically detected cuda or "cpu"
 
 # == network ==
 
@@ -220,9 +220,9 @@ loss_coeffs:
   total_energy:
     - 1
     - PerAtomMSELoss
-  # initial_charges: 
-  #   - 2
-  #   - MSELoss
+  initial_charges: 
+    - 2
+    - MSELoss
 
 # note that the ratio between force and energy loss matters for the training process. One may consider using 1:1 with the PerAtomMSELoss. If the energy loss still significantly dominate the loss function at the initial epochs, tune the energy loss weight lower helps the training a lot.
 
