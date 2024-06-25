@@ -8,14 +8,14 @@
 # run_name contains logfiles and saved models
 # process contains processed data sets
 # if 'root'/'run_name' exists, 'root'/'run_name'_'year'-'month'-'day'-'hour'-'min'-'s' will be used instead.
-root: results/AuMgO_longRange
-run_name: AuMgO-run-longRange_2x_try_1                    
+root: results/try-gold
+run_name: total-charge                    
 seed: 123                                                                         # model seed
 dataset_seed: 456                                                                 # data set seed
 append: true                                                                      # set true if a restarted run should append to the previous log file
 default_dtype: float64                                                            # type of float to use, e.g. float32 and float64
 allow_tf32: false                                                                 # whether to use TensorFloat32 if it is available
-#device:  cuda                                                                   # which device to use. Default: automatically detected cuda or "cpu"
+device:  cpu                                                                   # which device to use. Default: automatically detected cuda or "cpu"
 
 # == network ==
 
@@ -223,7 +223,7 @@ early_stopping_upper_bounds:                                                    
 #     - PerAtomMSELoss
 
 loss_coeffs:
-  forces: 2
+  forces: 1
   total_energy:
     - 1
     - PerAtomMSELoss
@@ -283,7 +283,8 @@ metrics_components:
   - - total_energy
     - mae
     - PerAtom: True                        # if true, energy is normalized by the number of atoms
-
+  # - - initial_charges
+  #   - mae
 # optimizer, may be any optimizer defined in torch.optim
 # the name `optimizer_name`is case sensitive
 # IMPORTANT: for NequIP (not for Allegro), we find that in most cases AMSGrad strongly improves

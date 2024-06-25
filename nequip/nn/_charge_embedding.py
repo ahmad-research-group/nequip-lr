@@ -38,8 +38,9 @@ class TotalChargeEmbedding(GraphModuleMixin, torch.nn.Module):
         total_charge_embedding = self.linear(
             data[self.field]
         )  # (batch_size, chemical_embedding_irreps_out)
-        print(total_charge_embedding[data[AtomicDataDict.BATCH_KEY],:])
-        # print(data[AtomicDataDict.BATCH_KEY])
+        # print(data[self.out_field].shape)
+        # print(data[AtomicDataDict.BATCH_KEY].shape)
+        # print(total_charge_embedding.shape)
         data[self.out_field] = (
             data[self.out_field] + total_charge_embedding[data[AtomicDataDict.BATCH_KEY], :]
         )
